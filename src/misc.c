@@ -1,14 +1,15 @@
 #include "zgl.h"
 #include "msghandling.h"
 
-void glopViewport(GLContext *c,GLParam *p)
+void glViewport(int x, int y, int width, int height)
 {
+  GLContext *c = gl_get_context();
   int xsize,ysize,xmin,ymin,xsize_req,ysize_req;
   
-  xmin=p[1].i;
-  ymin=p[2].i;
-  xsize=p[3].i;
-  ysize=p[4].i;
+  xmin = x;
+  ymin = y;
+  xsize = width;
+  ysize = height;
 
   /* we may need to resize the zbuffer */
 
@@ -42,11 +43,9 @@ void glopViewport(GLContext *c,GLParam *p)
   }
 }
 
-void glopEnableDisable(GLContext *c,GLParam *p)
+void glopEnableDisable(int code, int v)
 {
-  int code=p[1].i;
-  int v=p[2].i;
-
+  GLContext *c = gl_get_context();
   switch(code) {
   case GL_CULL_FACE:
     c->cull_face_enabled=v;
@@ -90,29 +89,43 @@ void glopEnableDisable(GLContext *c,GLParam *p)
   }
 }
 
-void glopShadeModel(GLContext *c,GLParam *p)
-{
-  int code=p[1].i;
-  c->current_shade_model=code;
+void glEnable(int cap) {
+  glopEnableDisable(cap, 1);
 }
 
-void glopCullFace(GLContext *c,GLParam *p)
-{
-  int code=p[1].i;
-  c->current_cull_face=code;
+void glDisable(int cap) {
+  glopEnableDisable(cap, 0);
 }
 
-void glopFrontFace(GLContext *c,GLParam *p)
+void glShadeModel(int mode)
 {
-  int code=p[1].i;
-  c->current_front_face=code;
+  GLContext *c = gl_get_context();
+  assert(mode == GL_FLAT || mode == GL_SMOOTH);
+  c->current_shade_model = mode;
 }
 
-void glopPolygonMode(GLContext *c,GLParam *p)
+void glCullFace(int mode) {
+  GLContext *c = gl_get_context();
+  assert(mode == GL_BACK || 
+         mode == GL_FRONT || 
+         mode == GL_FRONT_AND_BACK);
+  c->current_cull_face = mode;
+}
+
+void glFrontFace(int mode) {
+  GLContext *c = gl_get_context();
+  assert(mode == GL_CCW || mode == GL_CW);
+  c->current_front_face = (mode != GL_CCW);
+}
+
+void glPolygonMode(int face, int mode)
 {
-  int face=p[1].i;
-  int mode=p[2].i;
-  
+  GLContext *c = gl_get_context();
+  assert(face == GL_BACK ||
+         face == GL_FRONT ||
+         face == GL_FRONT_AND_BACK);
+  assert(mode == GL_POINT || mode == GL_LINE || mode==GL_FILL);
+
   switch(face) {
   case GL_BACK:
     c->polygon_mode_back=mode;
@@ -129,7 +142,7 @@ void glopPolygonMode(GLContext *c,GLParam *p)
   }
 }
 
-void glopHint(GLContext *c,GLParam *p)
+void glHint(int target, int mode)
 {
 #if 0
   int target=p[1].i;
@@ -140,8 +153,9 @@ void glopHint(GLContext *c,GLParam *p)
 }
 
 void 
-glopPolygonOffset(GLContext *c, GLParam *p)
+glPolygonOffset(GLfloat factor, GLfloat units)
 {
-  c->offset_factor = p[1].f;
-  c->offset_units = p[2].f;
+  GLContext *c = gl_get_context();
+  c->offset_factor = factor;
+  c->offset_units = units;
 }

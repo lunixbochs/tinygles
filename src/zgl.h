@@ -16,14 +16,6 @@
 #define DEBUG
 /* #define NDEBUG */
 
-enum {
-
-#define ADD_OP(a,b,c) OP_ ## a ,
-
-#include "opinfo.h"
-
-};
-
 /* initially # of allocated GLVertexes (will grow when necessary) */
 #define POLYGON_MAX_VERTEX 16
 
@@ -281,8 +273,6 @@ typedef struct GLContext {
 
 extern GLContext *gl_ctx;
 
-void gl_add_op(GLParam *p);
-
 /* clip.c */
 void gl_transform_to_viewport(GLContext *c,GLVertex *v);
 void gl_draw_triangle(GLContext *c,GLVertex *p0,GLVertex *p1,GLVertex *p2);
@@ -300,9 +290,6 @@ void gl_draw_triangle_select(GLContext *c,
 
 /* matrix.c */
 void gl_print_matrix(const float *m);
-/*
-void glopLoadIdentity(GLContext *c,GLParam *p);
-void glopTranslate(GLContext *c,GLParam *p);*/
 
 /* light.c */
 void gl_add_select(GLContext *c,unsigned int zmin,unsigned int zmax);
@@ -348,11 +335,6 @@ void dprintf(const char *, ...);
 
 #endif
 #endif /* !BEOS */
-
-/* glopXXX functions */
-
-#define ADD_OP(a,b,c) void glop ## a (GLContext *,GLParam *);
-#include "opinfo.h"
 
 /* this clip epsilon is needed to avoid some rounding errors after
    several clipping stages */

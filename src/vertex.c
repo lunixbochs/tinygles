@@ -1,53 +1,43 @@
 #include "zgl.h"
 
-void glopNormal(GLContext * c, GLParam * p)
-{
-    V3 v;
-
-    v.X = p[1].f;
-    v.Y = p[2].f;
-    v.Z = p[3].f;
-
-    c->current_normal.X = v.X;
-    c->current_normal.Y = v.Y;
-    c->current_normal.Z = v.Z;
+void glNormal3f(float x, float y, float z) {
+    GLContext *c = gl_get_context();
+    c->current_normal.X = x;
+    c->current_normal.Y = y;
+    c->current_normal.Z = z;
     c->current_normal.W = 0;
 }
 
-void glopTexCoord(GLContext * c, GLParam * p)
-{
-    c->current_tex_coord.X = p[1].f;
-    c->current_tex_coord.Y = p[2].f;
-    c->current_tex_coord.Z = p[3].f;
-    c->current_tex_coord.W = p[4].f;
+void glTexCoord4f(float s, float t, float r, float q) {
+    GLContext *c = gl_get_context();
+    c->current_tex_coord.X = s;
+    c->current_tex_coord.Y = t;
+    c->current_tex_coord.Z = r;
+    c->current_tex_coord.W = q;
 }
 
-void glopEdgeFlag(GLContext * c, GLParam * p)
-{
-    c->current_edge_flag = p[1].i;
+void glEdgeFlag(int flag) {
+    GLContext *c = gl_get_context();
+    c->current_edge_flag = flag;
 }
 
-void glopColor(GLContext * c, GLParam * p)
-{
+void glColor4f(float r, float g, float b, float a) {
+    GLContext *c = gl_get_context();
+    c->current_color.X = r;
+    c->current_color.Y = g;
+    c->current_color.Z = b;
+    c->current_color.W = a;
 
-    c->current_color.X = p[1].f;
-    c->current_color.Y = p[2].f;
-    c->current_color.Z = p[3].f;
-    c->current_color.W = p[4].f;
-    c->longcurrent_color[0] = p[5].ui;
-    c->longcurrent_color[1] = p[6].ui;
-    c->longcurrent_color[2] = p[7].ui;
+    c->longcurrent_color[0] = (unsigned int) (r * (ZB_POINT_RED_MAX - ZB_POINT_RED_MIN) +
+                                              ZB_POINT_RED_MIN);
+    c->longcurrent_color[1] = (unsigned int) (g * (ZB_POINT_GREEN_MAX - ZB_POINT_GREEN_MIN) +
+                                              ZB_POINT_GREEN_MIN);
+    c->longcurrent_color[2] = (unsigned int) (b * (ZB_POINT_BLUE_MAX - ZB_POINT_BLUE_MIN) +
+                                              ZB_POINT_BLUE_MIN);
 
     if (c->color_material_enabled) {
-	GLParam q[7];
-	q[0].op = OP_Material;
-	q[1].i = c->current_color_material_mode;
-	q[2].i = c->current_color_material_type;
-	q[3].f = p[1].f;
-	q[4].f = p[2].f;
-	q[5].f = p[3].f;
-	q[6].f = p[4].f;
-	glopMaterial(c, q);
+        float color[4] = {r, g, b, a};
+        glMaterialfv(c->current_color_material_mode, c->current_color_material_type, color);
     }
 }
 
@@ -68,14 +58,13 @@ void gl_eval_viewport(GLContext * c)
     v->scale.Z = -((zsize - 0.5) / 2.0);
 }
 
-void glopBegin(GLContext * c, GLParam * p)
+void glBegin(int type)
 {
-    int type;
+    GLContext *c = gl_get_context();
     M4 tmp;
 
     assert(c->in_begin == 0);
 
-    type = p[1].i;
     c->begin_type = type;
     c->in_begin = 1;
     c->vertex_n = 0;
@@ -203,8 +192,8 @@ static inline void gl_vertex_transform(GLContext * c, GLVertex * v)
     v->clip_code = gl_clipcode(v->pc.X, v->pc.Y, v->pc.Z, v->pc.W);
 }
 
-void glopVertex(GLContext * c, GLParam * p)
-{
+void glVertex4f(float x, float y, float z, float w) {
+    GLContext *c = gl_get_context();
     GLVertex *v;
     int n, i, cnt;
 
@@ -231,10 +220,10 @@ void glopVertex(GLContext * c, GLParam * p)
     v = &c->vertex[n];
     n++;
 
-    v->coord.X = p[1].f;
-    v->coord.Y = p[2].f;
-    v->coord.Z = p[3].f;
-    v->coord.W = p[4].f;
+    v->coord.X = x;
+    v->coord.Y = y;
+    v->coord.Z = z;
+    v->coord.W = w;
 
     gl_vertex_transform(c, v);
 
@@ -345,8 +334,9 @@ void glopVertex(GLContext * c, GLParam * p)
     c->vertex_n = n;
 }
 
-void glopEnd(GLContext * c, GLParam * param)
+void glEnd()
 {
+    GLContext *c = gl_get_context();
     assert(c->in_begin == 1);
 
     if (c->begin_type == GL_LINE_LOOP) {

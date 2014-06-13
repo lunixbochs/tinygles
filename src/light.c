@@ -1,17 +1,19 @@
 #include "zgl.h"
 #include "msghandling.h"
 
-void glopMaterial(GLContext *c,GLParam *p)
+void glMaterialf(int mode, int type, float param) {
+    float v[4] = {param, 0, 0, 0};
+    glMaterialfv(mode, type, v);
+}
+
+void glMaterialfv(int mode, int type, float *v)
 {
-  int mode=p[1].i;
-  int type=p[2].i;
-  float *v=&p[3].f;
+  GLContext *c = gl_get_context();
   int i;
   GLMaterial *m;
 
   if (mode == GL_FRONT_AND_BACK) {
-    p[1].i=GL_FRONT;
-    glopMaterial(c,p);
+    glMaterialfv(GL_FRONT, type, v);
     mode=GL_BACK;
   }
   if (mode == GL_FRONT) m=&c->materials[0];
@@ -49,28 +51,28 @@ void glopMaterial(GLContext *c,GLParam *p)
   }
 }
 
-void glopColorMaterial(GLContext *c,GLParam *p)
+void glColorMaterial(int mode, int type)
 {
-  int mode=p[1].i;
-  int type=p[2].i;
-
+  GLContext *c = gl_get_context();
   c->current_color_material_mode=mode;
   c->current_color_material_type=type;
 }
 
-void glopLight(GLContext *c,GLParam *p)
-{
-  int light=p[1].i;
-  int type=p[2].i;
-  V4 v;
+void glLightf(int light, int type, float v) {
+    float param[4] = {v, 0, 0, 0};
+    glLightfv(light, type, param);
+}
+
+void glLightfv(int light, int type, float *param) {
+  GLContext *c = gl_get_context();
+  // TODO: 3 components?
   GLLight *l;
   int i;
   
   assert(light >= GL_LIGHT0 && light < GL_LIGHT0+MAX_LIGHTS );
 
+  V4 v = *(V4 *)param;
   l=&c->lights[light-GL_LIGHT0];
-
-  for(i=0;i<4;i++) v.v[i]=p[3+i].f;
 
   switch(type) {
   case GL_AMBIENT:
@@ -129,27 +131,30 @@ void glopLight(GLContext *c,GLParam *p)
     assert(0);
   }
 }
-  
 
-void glopLightModel(GLContext *c,GLParam *p)
+void glLightModeli(int pname, int v)
 {
-  int pname=p[1].i;
-  float *v=&p[2].f;
-  int i;
+  float param[4] = {v, 0, 0, 0};
+  glLightModelfv(pname, param);
+}
+
+void glLightModelfv(int pname, float *param)
+{
+  GLContext *c = gl_get_context();
+  V4 v = *(V4 *)param;
 
   switch(pname) {
   case GL_LIGHT_MODEL_AMBIENT:
-    for(i=0;i<4;i++) 
-      c->ambient_light_model.v[i]=v[i];
+    c->ambient_light_model = v;
     break;
   case GL_LIGHT_MODEL_LOCAL_VIEWER:
-    c->local_light_model=(int)v[0];
+    c->local_light_model = (int)v.v[0];
     break;
   case GL_LIGHT_MODEL_TWO_SIDE:
-    c->light_model_two_side = (int)v[0];
+    c->light_model_two_side = (int)v.v[0];
     break;
   default:
-    tgl_warning("glopLightModel: illegal pname: 0x%x\n", pname);
+    tgl_warning("glLightModel: illegal pname: 0x%x\n", pname);
     //assert(0);
     break;
   }

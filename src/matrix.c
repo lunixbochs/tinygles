@@ -14,10 +14,9 @@ static inline void gl_matrix_update(GLContext *c)
   c->matrix_model_projection_updated=(c->matrix_mode<=1);
 }
 
-
-void glopMatrixMode(GLContext *c,GLParam *p)
+void glMatrixMode(int mode)
 {
-  int mode=p[1].i;
+  GLContext *c = gl_get_context();
   switch(mode) {
   case GL_MODELVIEW:
     c->matrix_mode=0;
@@ -33,59 +32,55 @@ void glopMatrixMode(GLContext *c,GLParam *p)
   }
 }
 
-void glopLoadMatrix(GLContext *c,GLParam *p)
+void glLoadMatrixf(const float *matrix)
 {
-  M4 *m;
+  GLContext *c = gl_get_context();
   int i;
-  
-  GLParam *q;
-
+  M4 *m;
   m=c->matrix_stack_ptr[c->matrix_mode];
-  q=p+1;
 
-  for(i=0;i<4;i++) {
-    m->m[0][i]=q[0].f;
-    m->m[1][i]=q[1].f;
-    m->m[2][i]=q[2].f;
-    m->m[3][i]=q[3].f;
+  int q = 0;
+  for(i=0; i<4; i++) {
+    m->m[0][i] = matrix[q + 0];
+    m->m[1][i] = matrix[q + 1];
+    m->m[2][i] = matrix[q + 2];
+    m->m[3][i] = matrix[q + 3];
     q+=4;
   }
 
   gl_matrix_update(c);
 }
 
-void glopLoadIdentity(GLContext *c,GLParam *p)
+void glLoadIdentity(void)
 {
-
+  GLContext *c = gl_get_context();
   gl_M4_Id(c->matrix_stack_ptr[c->matrix_mode]);
-
   gl_matrix_update(c);
 }
 
-void glopMultMatrix(GLContext *c,GLParam *p)
+void glMultMatrixf(const float *matrix)
 {
+  GLContext *c = gl_get_context();
   M4 m;
   int i;
 
-  GLParam *q;
-  q=p+1;
-
+  int q = 0;
   for(i=0;i<4;i++) {
-    m.m[0][i]=q[0].f;
-    m.m[1][i]=q[1].f;
-    m.m[2][i]=q[2].f;
-    m.m[3][i]=q[3].f;
+    m.m[0][i] = matrix[q + 0];
+    m.m[1][i] = matrix[q + 1];
+    m.m[2][i] = matrix[q + 2];
+    m.m[3][i] = matrix[q + 3];
     q+=4;
   }
 
   gl_M4_MulLeft(c->matrix_stack_ptr[c->matrix_mode],&m);
-
   gl_matrix_update(c);
 }
 
 
-void glopPushMatrix(GLContext *c,GLParam *p)
+void glPushMatrix()
 {
+  GLContext *c = gl_get_context();
   int n=c->matrix_mode;
   M4 *m;
 
@@ -99,8 +94,9 @@ void glopPushMatrix(GLContext *c,GLParam *p)
   gl_matrix_update(c);
 }
 
-void glopPopMatrix(GLContext *c,GLParam *p)
+void glPopMatrix()
 {
+  GLContext *c = gl_get_context();
   int n=c->matrix_mode;
 
   assert( c->matrix_stack_ptr[n] > c->matrix_stack[n] );
@@ -109,17 +105,17 @@ void glopPopMatrix(GLContext *c,GLParam *p)
 }
 
 
-void glopRotate(GLContext *c,GLParam *p)
+void glRotatef(float angle, float x, float y, float z)
 {
+  GLContext *c = gl_get_context();
   M4 m;
   float u[3];
-  float angle;
   int dir_code;
 
-  angle = p[1].f * M_PI / 180.0;
-  u[0]=p[2].f;
-  u[1]=p[3].f;
-  u[2]=p[4].f;
+  angle = angle * M_PI / 180.0;
+  u[0]= x;
+  u[1]= y;
+  u[2]= z;
 
   /* simple case detection */
   dir_code = ((u[0] != 0)<<2) | ((u[1] != 0)<<1) | (u[2] != 0);
@@ -179,11 +175,10 @@ void glopRotate(GLContext *c,GLParam *p)
   gl_matrix_update(c);
 }
 
-void glopScale(GLContext *c,GLParam *p)
+void glScalef(float x, float y, float z)
 {
+  GLContext *c = gl_get_context();
   float *m;
-  float x=p[1].f,y=p[2].f,z=p[3].f;
-
   m=&c->matrix_stack_ptr[c->matrix_mode]->m[0][0];
 
   m[0] *= x;   m[1] *= y;   m[2]  *= z;
@@ -193,11 +188,10 @@ void glopScale(GLContext *c,GLParam *p)
   gl_matrix_update(c);
 }
 
-void glopTranslate(GLContext *c,GLParam *p)
+void glTranslatef(float x, float y, float z)
 {
+  GLContext *c = gl_get_context();
   float *m;
-  float x=p[1].f,y=p[2].f,z=p[3].f;
-
   m=&c->matrix_stack_ptr[c->matrix_mode]->m[0][0];
 
   m[3] = m[0] * x + m[1] * y + m[2]  * z + m[3];
@@ -208,25 +202,20 @@ void glopTranslate(GLContext *c,GLParam *p)
   gl_matrix_update(c);
 }
 
-
-void glopFrustum(GLContext *c,GLParam *p)
+void glFrustum(double left, double right, double bottom,
+               double top, double near, double far)
 {
+  GLContext *c = gl_get_context();
   float *r;
   M4 m;
-  float left=p[1].f;
-  float right=p[2].f;
-  float bottom=p[3].f;
-  float top=p[4].f;
-  float near=p[5].f;
-  float farp=p[6].f;
   float x,y,A,B,C,D;
 
   x = (2.0*near) / (right-left);
   y = (2.0*near) / (top-bottom);
   A = (right+left) / (right-left);
   B = (top+bottom) / (top-bottom);
-  C = -(farp+near) / ( farp-near);
-  D = -(2.0*farp*near) / (farp-near);
+  C = -(far+near) / ( far-near);
+  D = -(2.0*far*near) / (far-near);
 
   r=&m.m[0][0];
   r[0]= x; r[1]=0; r[2]=A; r[3]=0;

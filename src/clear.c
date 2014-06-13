@@ -1,22 +1,23 @@
 #include "zgl.h"
 
-
-void glopClearColor(GLContext *c,GLParam *p)
+void glClearColor(float r,float g,float b,float a)
 {
-  c->clear_color.v[0]=p[1].f;
-  c->clear_color.v[1]=p[2].f;
-  c->clear_color.v[2]=p[3].f;
-  c->clear_color.v[3]=p[4].f;
-}
-void glopClearDepth(GLContext *c,GLParam *p)
-{
-  c->clear_depth=p[1].f;
+  GLContext *c = gl_get_context();
+  c->clear_color.v[0] = r;
+  c->clear_color.v[1] = g;
+  c->clear_color.v[2] = b;
+  c->clear_color.v[3] = a;
 }
 
-
-void glopClear(GLContext *c,GLParam *p)
+void glClearDepth(double depth)
 {
-  int mask=p[1].i;
+  GLContext *c = gl_get_context();
+  c->clear_depth = depth;
+}
+
+void glClear(int mask)
+{
+  GLContext *c = gl_get_context();
   int z=0;
   int r=(int)(c->clear_color.v[0]*65535);
   int g=(int)(c->clear_color.v[1]*65535);
@@ -27,4 +28,3 @@ void glopClear(GLContext *c,GLParam *p)
   ZB_clear(c->zb,mask & GL_DEPTH_BUFFER_BIT,z,
 	   mask & GL_COLOR_BUFFER_BIT,r,g,b);
 }
-

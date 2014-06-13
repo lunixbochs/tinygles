@@ -50,25 +50,28 @@ void glSelectBuffer(int size,unsigned int *buf)
 }
 
 
-void glopInitNames(GLContext *c,GLParam *p)
+void glInitNames()
 {
+  GLContext *c = gl_get_context();
   if (c->render_mode == GL_SELECT) {
     c->name_stack_size=0;
     c->select_hit=NULL;
   }
 }
 
-void glopPushName(GLContext *c,GLParam *p)
+void glPushName(unsigned int name)
 {
+  GLContext *c = gl_get_context();
   if (c->render_mode == GL_SELECT) {
     assert(c->name_stack_size<MAX_NAME_STACK_DEPTH);
-    c->name_stack[c->name_stack_size++]=p[1].i;
+    c->name_stack[c->name_stack_size++]=name;
     c->select_hit=NULL;
   }
 }
 
-void glopPopName(GLContext *c,GLParam *p)
+void glPopName()
 {
+  GLContext *c = gl_get_context();
   if (c->render_mode == GL_SELECT) {
     assert(c->name_stack_size>0);
     c->name_stack_size--;
@@ -76,11 +79,12 @@ void glopPopName(GLContext *c,GLParam *p)
   }
 }
 
-void glopLoadName(GLContext *c,GLParam *p)
+void glLoadName(unsigned int name)
 {
+  GLContext *c = gl_get_context();
   if (c->render_mode == GL_SELECT) {
    assert(c->name_stack_size>0);
-   c->name_stack[c->name_stack_size-1]=p[1].i;
+   c->name_stack[c->name_stack_size-1] = name;
    c->select_hit=NULL;
   }
 }

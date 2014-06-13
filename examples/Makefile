@@ -1,6 +1,6 @@
 include ../config.mk
 
-PROGS = mech texobj gears spin
+PROGS = texobj # mech gears spin
 
 all: $(PROGS)
 

@@ -1,10 +1,10 @@
 include ../config.mk
 
-OBJS= api.o list.o vertex.o init.o matrix.o texture.o \
+OBJS= api.o vertex.o init.o matrix.o texture.o \
       misc.o clear.o light.o clip.o select.o get.o error.o \
       zbuffer.o zline.o zdither.o ztriangle.o \
       zmath.o image_util.o oscontext.o msghandling.o \
-      arrays.o specbuf.o
+      arrays.o specbuf.o context.o
 ifdef TINYGL_USE_GLX
 OBJS += glx.o
 endif
@@ -32,7 +32,6 @@ clip.o: zgl.h zfeatures.h
 vertex.o: zgl.h zfeatures.h
 light.o: zgl.h zfeatures.h
 matrix.o: zgl.h zfeatures.h
-list.o: zgl.h opinfo.h zfeatures.h
 arrays.c: zgl.h zfeatures.h
 specbuf.o: zgl.h zfeatures.h
 glx.o: zgl.h zfeatures.h

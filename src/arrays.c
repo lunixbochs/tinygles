@@ -8,21 +8,21 @@
 #define TEXCOORD_ARRAY 0x0008
 
 void
-glopArrayElement(GLContext *c, GLParam *param)
+glArrayElement(GLint idx)
 {
+  GLContext *c = gl_get_context();
   int i;
   int states = c->client_states;
-  int idx = param[1].i;
-    
+
   if (states & COLOR_ARRAY) {
-    GLParam p[5];
     int size = c->color_array_size; 
     i = idx * (size + c->color_array_stride);
-    p[1].f = c->color_array[i];
-    p[2].f = c->color_array[i+1];
-    p[3].f = c->color_array[i+2];
-    p[4].f = size > 3 ? c->color_array[i+3] : 1.0f;
-    glopColor(c, p);  
+    glColor4f(
+      c->color_array[i],
+      c->color_array[i+1],
+      c->color_array[i+2],
+      size > 3 ? c->color_array[i+3] : 1.0f
+    );
   }
   if (states & NORMAL_ARRAY) {
     i = idx * (3 + c->normal_array_stride);
@@ -40,167 +40,103 @@ glopArrayElement(GLContext *c, GLParam *param)
     c->current_tex_coord.W = size > 3 ? c->texcoord_array[i+3] : 1.0f;
   }
   if (states & VERTEX_ARRAY) {
-    GLParam p[5];
     int size = c->vertex_array_size;
     i = idx * (size + c->vertex_array_stride);
-    p[1].f = c->vertex_array[i];
-    p[2].f = c->vertex_array[i+1];
-    p[3].f = size > 2 ? c->vertex_array[i+2] : 0.0f;
-    p[4].f = size > 3 ? c->vertex_array[i+3] : 1.0f;
-    glopVertex(c, p);
+    glVertex4f(
+        c->vertex_array[i],
+        c->vertex_array[i+1],
+        size > 2 ? c->vertex_array[i+2] : 0.0f,
+        size > 3 ? c->vertex_array[i+3] : 1.0f
+    );
   }
 }
 
 void
-glArrayElement(GLint i)
-{
-  GLParam p[2];
-  p[0].op = OP_ArrayElement;
-  p[1].i = i;
-  gl_add_op(p);
-}
-
-
-void
-glopEnableClientState(GLContext *c, GLParam *p)
-{
-  c->client_states |= p[1].i;
-}
-
-void 
 glEnableClientState(GLenum array)
 {
-  GLParam p[2];
-  p[0].op = OP_EnableClientState;
-  
+  GLContext *c = gl_get_context();
+  GLenum bit;
   switch(array) {
   case GL_VERTEX_ARRAY:
-    p[1].i = VERTEX_ARRAY;
+    bit = VERTEX_ARRAY;
     break;  
   case GL_NORMAL_ARRAY:
-    p[1].i = NORMAL_ARRAY;
+    bit = NORMAL_ARRAY;
     break;
   case GL_COLOR_ARRAY:
-    p[1].i = COLOR_ARRAY;
+    bit = COLOR_ARRAY;
     break;
   case GL_TEXTURE_COORD_ARRAY:
-    p[1].i = TEXCOORD_ARRAY;
+    bit = TEXCOORD_ARRAY;
     break;
   default:
     assert(0);
     break;
   }
-  gl_add_op(p);
-}
-
-void
-glopDisableClientState(GLContext *c, GLParam *p)
-{
-  c->client_states &= p[1].i;
+  c->client_states |= bit;
 }
 
 void
 glDisableClientState(GLenum array)
 {
-  GLParam p[2];
-  p[0].op = OP_DisableClientState;
-    
+  GLContext *c = gl_get_context();
+  GLenum bit;
   switch(array) {
   case GL_VERTEX_ARRAY:
-    p[1].i = ~VERTEX_ARRAY;
+    bit = ~VERTEX_ARRAY;
     break;  
   case GL_NORMAL_ARRAY:
-    p[1].i = ~NORMAL_ARRAY;
+    bit = ~NORMAL_ARRAY;
     break;
   case GL_COLOR_ARRAY:
-    p[1].i = ~COLOR_ARRAY;
+    bit = ~COLOR_ARRAY;
     break;
   case GL_TEXTURE_COORD_ARRAY:
-    p[1].i = ~TEXCOORD_ARRAY;
+    bit = ~TEXCOORD_ARRAY;
     break;
   default:
     assert(0);
     break;
   }
-  gl_add_op(p);
+  c->client_states &= bit;
 }
 
 void
-glopVertexPointer(GLContext *c, GLParam *p)
-{
-  c->vertex_array_size = p[1].i;
-  c->vertex_array_stride = p[2].i;
-  c->vertex_array = p[3].p;
-}
-
-void 
+// TODO: support other types? or do we want to assume glshim is helping us?
 glVertexPointer(GLint size, GLenum type, GLsizei stride, 
                 const GLvoid *pointer)
 {
-  GLParam p[4];
-  assert(type == GL_FLOAT);
-  p[0].op = OP_VertexPointer;
-  p[1].i = size;
-  p[2].i = stride;
-  p[3].p = (void*)pointer;
-  gl_add_op(p);
+  GLContext *c = gl_get_context();
+  c->vertex_array_size = size;
+  c->vertex_array_stride = stride;
+  c->vertex_array = pointer;
 }
 
 void
-glopColorPointer(GLContext *c, GLParam *p)
-{
-  c->color_array_size = p[1].i;
-  c->color_array_stride = p[2].i;
-  c->color_array = p[3].p;  
-}
-
-void 
-glColorPointer(GLint size, GLenum type, GLsizei stride, 
+glColorPointer(GLint size, GLenum type, GLsizei stride,
                const GLvoid *pointer)
 {
-  GLParam p[4];
-  assert(type == GL_FLOAT);
-  p[0].op = OP_ColorPointer;
-  p[1].i = size;
-  p[2].i = stride;
-  p[3].p = (void*)pointer;
-  gl_add_op(p);
+  GLContext *c = gl_get_context();
+  c->color_array_size = size;
+  c->color_array_stride = stride;
+  c->color_array = pointer;
 }
 
 void
-glopNormalPointer(GLContext *c, GLParam *p)
-{
-  c->normal_array_stride = p[1].i;
-  c->normal_array = p[2].p;  
-}
-
-void 
 glNormalPointer(GLenum type, GLsizei stride, 
                 const GLvoid *pointer)
 {
-  GLParam p[3];
-  assert(type == GL_FLOAT);
-  p[0].op = OP_NormalPointer;
-  p[1].i = stride;
-  p[2].p = (void*)pointer;
+  GLContext *c = gl_get_context();
+  c->normal_array_stride = stride;
+  c->normal_array = pointer;
 }
 
 void
-glopTexCoordPointer(GLContext *c, GLParam *p)
-{
-  c->texcoord_array_size = p[1].i;
-  c->texcoord_array_stride = p[2].i;
-  c->texcoord_array = p[3].p;
-}
-
-void 
 glTexCoordPointer(GLint size, GLenum type, GLsizei stride, 
                   const GLvoid *pointer)
 {
-  GLParam p[4];
-  assert(type == GL_FLOAT);
-  p[0].op = OP_TexCoordPointer;
-  p[1].i = size;
-  p[2].i = stride;
-  p[3].p = (void*)pointer;
+  GLContext *c = gl_get_context();
+  c->texcoord_array_size = size;
+  c->texcoord_array_stride = stride;
+  c->texcoord_array = pointer;
 }

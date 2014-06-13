@@ -106,10 +106,9 @@ void glDeleteTextures(int n, const unsigned int *textures)
 }
 
 
-void glopBindTexture(GLContext *c,GLParam *p)
+void glBindTexture(int target, int texture)
 {
-  int target=p[1].i;
-  int texture=p[2].i;
+  GLContext *c = gl_get_context();
   GLTexture *t;
 
   assert(target == GL_TEXTURE_2D && texture >= 0);
@@ -121,17 +120,11 @@ void glopBindTexture(GLContext *c,GLParam *p)
   c->current_texture=t;
 }
 
-void glopTexImage2D(GLContext *c,GLParam *p)
+void glTexImage2D(int target, int level, int components,
+                  int width, int height, int border,
+                  int format, int type, void *pixels)
 {
-  int target=p[1].i;
-  int level=p[2].i;
-  int components=p[3].i;
-  int width=p[4].i;
-  int height=p[5].i;
-  int border=p[6].i;
-  int format=p[7].i;
-  int type=p[8].i;
-  void *pixels=p[9].p;
+  GLContext *c = gl_get_context();
   GLImage *im;
   unsigned char *pixels1;
   int do_free;
@@ -181,15 +174,11 @@ void glopTexImage2D(GLContext *c,GLParam *p)
 
 
 /* TODO: not all tests are done */
-void glopTexEnv(GLContext *c,GLParam *p)
+void glTexEnvi(int target, int pname, int param)
 {
-  int target=p[1].i;
-  int pname=p[2].i;
-  int param=p[3].i;
-
   if (target != GL_TEXTURE_ENV) {
   error:
-    gl_fatal_error("glTexParameter: unsupported option");
+    gl_fatal_error("glTexEnvi: unsupported option");
   }
 
   if (pname != GL_TEXTURE_ENV_MODE) goto error;
@@ -198,12 +187,8 @@ void glopTexEnv(GLContext *c,GLParam *p)
 }
 
 /* TODO: not all tests are done */
-void glopTexParameter(GLContext *c,GLParam *p)
+void glTexParameteri(int target, int pname, int param)
 {
-  int target=p[1].i;
-  int pname=p[2].i;
-  int param=p[3].i;
-  
   if (target != GL_TEXTURE_2D) {
   error:
     gl_fatal_error("glTexParameter: unsupported option");
@@ -217,11 +202,8 @@ void glopTexParameter(GLContext *c,GLParam *p)
   }
 }
 
-void glopPixelStore(GLContext *c,GLParam *p)
+void glPixelStorei(int pname, int param)
 {
-  int pname=p[1].i;
-  int param=p[2].i;
-
   if (pname != GL_UNPACK_ALIGNMENT ||
       param != 1) {
     gl_fatal_error("glPixelStore: unsupported option");
