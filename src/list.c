@@ -44,11 +44,11 @@ static void delete_list(GLContext *c,int list)
   pb=l->first_op_buffer;
   while (pb!=NULL) {
     pb1=pb->next;
-    gl_free(pb);
+    free(pb);
     pb=pb1;
   }
   
-  gl_free(l);
+  free(l);
   c->shared_state.lists[list]=NULL;
 }
 
@@ -57,8 +57,8 @@ static GLList *alloc_list(GLContext *c,int list)
   GLList *l;
   GLParamBuffer *ob;
 
-  l=gl_zalloc(sizeof(GLList));
-  ob=gl_zalloc(sizeof(GLParamBuffer));
+  l=calloc(1, sizeof(GLList));
+  ob=calloc(1, sizeof(GLParamBuffer));
 
   ob->next=NULL;
   l->first_op_buffer=ob;
@@ -113,7 +113,7 @@ void gl_compile_op(GLContext *c,GLParam *p)
   /* we should be able to add a NextBuffer opcode */
   if ((index + op_size) > (OP_BUFFER_MAX_SIZE-2)) {
 
-    ob1=gl_zalloc(sizeof(GLParamBuffer));
+    ob1=calloc(1, sizeof(GLParamBuffer));
     ob1->next=NULL;
 
     ob->next=ob1;

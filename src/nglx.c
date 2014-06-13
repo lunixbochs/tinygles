@@ -19,7 +19,7 @@ NGLXContext nglXCreateContext(NGLXContext shareList, int flags)
   if (shareList != NULL) {
     gl_fatal_error("No sharing available in TinyGL");
   }
-  ctx=gl_malloc(sizeof(TinyNGLXContext));
+  ctx=malloc(sizeof(TinyNGLXContext));
   if (!ctx)
       return NULL;
   ctx->gl_context=NULL;
@@ -32,7 +32,7 @@ void glXDestroyContext( NGLXContext ctx1 )
   if (ctx->gl_context != NULL) {
     glClose();
   }
-  gl_free(ctx);
+  free(ctx);
 }
 
 

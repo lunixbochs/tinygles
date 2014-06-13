@@ -34,17 +34,17 @@ static void free_texture(GLContext *c,int h)
 
   for(i=0;i<MAX_TEXTURE_LEVELS;i++) {
     im=&t->images[i];
-    if (im->pixmap != NULL) gl_free(im->pixmap);
+    if (im->pixmap != NULL) free(im->pixmap);
   }
 
-  gl_free(t);
+  free(t);
 }
 
 GLTexture *alloc_texture(GLContext *c,int h)
 {
   GLTexture *t,**ht;
   
-  t=gl_zalloc(sizeof(GLTexture));
+  t=calloc(1, sizeof(GLTexture));
 
   ht=&c->shared_state.texture_hash_table[h % TEXTURE_HASH_TABLE_SIZE];
 
@@ -144,7 +144,7 @@ void glopTexImage2D(GLContext *c,GLParam *p)
   
   do_free=0;
   if (width != 256 || height != 256) {
-    pixels1 = gl_malloc(256 * 256 * 3);
+    pixels1 = malloc(256 * 256 * 3);
     /* no interpolation is done here to respect the original image aliasing ! */
     gl_resizeImageNoInterpolate(pixels1,256,256,pixels,width,height);
     do_free=1;
@@ -157,26 +157,26 @@ void glopTexImage2D(GLContext *c,GLParam *p)
   im=&c->current_texture->images[level];
   im->xsize=width;
   im->ysize=height;
-  if (im->pixmap!=NULL) gl_free(im->pixmap);
+  if (im->pixmap!=NULL) free(im->pixmap);
 #if TGL_FEATURE_RENDER_BITS == 24 
-  im->pixmap=gl_malloc(width*height*3);
+  im->pixmap=malloc(width*height*3);
   if(im->pixmap) {
       memcpy(im->pixmap,pixels1,width*height*3);
   }
 #elif TGL_FEATURE_RENDER_BITS == 32
-  im->pixmap=gl_malloc(width*height*4);
+  im->pixmap=malloc(width*height*4);
   if(im->pixmap) {
       gl_convertRGB_to_8A8R8G8B(im->pixmap,pixels1,width,height);
   }
 #elif TGL_FEATURE_RENDER_BITS == 16
-  im->pixmap=gl_malloc(width*height*2);
+  im->pixmap=malloc(width*height*2);
   if(im->pixmap) {
       gl_convertRGB_to_5R6G5B(im->pixmap,pixels1,width,height);
   }
 #else
 #error TODO
 #endif
-  if (do_free) gl_free(pixels1);
+  if (do_free) free(pixels1);
 }
 
 

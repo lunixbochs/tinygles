@@ -22,10 +22,10 @@ ostgl_create_context(const int xsize,
                           convertion */
   assert(numbuffers >= 1);
   
-  context = gl_malloc(sizeof(ostgl_context));
+  context = malloc(sizeof(ostgl_context));
   assert(context);
-  context->zbs = gl_malloc(sizeof(void*)*numbuffers);
-  context->framebuffers = gl_malloc(sizeof(void*)*numbuffers);
+  context->zbs = malloc(sizeof(void*)*numbuffers);
+  context->framebuffers = malloc(sizeof(void*)*numbuffers);
   
   assert(context->zbs != NULL && context->framebuffers != NULL);
   
@@ -54,9 +54,9 @@ ostgl_delete_context(ostgl_context *context)
   for (i = 0; i < context->numbuffers; i++) {
     ZB_close(context->zbs[i]);
   }
-  gl_free(context->zbs);
-  gl_free(context->framebuffers);
-  gl_free(context);
+  free(context->zbs);
+  free(context->framebuffers);
+  free(context);
   
   if (--buffercnt == 0) {
     glClose();

@@ -145,9 +145,4 @@ void ZB_fillTriangleMappingPerspective(ZBuffer *zb,
 typedef void (*ZB_fillTriangleFunc)(ZBuffer  *,
 	    ZBufferPoint *,ZBufferPoint *,ZBufferPoint *);
 
-/* memory.c */
-void gl_free(void *p);
-void *gl_malloc(int size);
-void *gl_zalloc(int size);
-
 #endif /* _tgl_zbuffer_h_ */

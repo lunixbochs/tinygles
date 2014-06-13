@@ -62,7 +62,7 @@ GLXContext glXCreateContext( Display *dpy, XVisualInfo *vis,
   if (shareList != NULL) {
     gl_fatal_error("No sharing available in TinyGL");
   }
-  ctx=gl_malloc(sizeof(TinyGLXContext));
+  ctx=malloc(sizeof(TinyGLXContext));
   ctx->gl_context=NULL;
   ctx->visual_info=*vis;
   return (GLXContext) ctx;
@@ -75,7 +75,7 @@ void glXDestroyContext( Display *dpy, GLXContext ctx1 )
   if (ctx->gl_context != NULL) {
     glClose();
   }
-  gl_free(ctx);
+  free(ctx);
 }
 
 
@@ -93,18 +93,18 @@ static int bits_per_pixel(Display *dpy, XVisualInfo *visinfo)
    int bpp;
    char *data;
 
-   data = gl_malloc(8);
+   data = malloc(8);
    if (data == NULL) 
        return visinfo->depth;
 
    img = XCreateImage(dpy, visinfo->visual, visinfo->depth,
                       ZPixmap, 0, data, 1, 1, 32, 0);
    if (img == NULL) {
-       gl_free(data);
+       free(data);
        return visinfo->depth;
    }
    bpp = img->bits_per_pixel;
-   gl_free(data);
+   free(data);
    img->data = NULL;
    XDestroyImage(img);
    return bpp;
@@ -125,13 +125,13 @@ static int create_ximage(TinyGLXContext *ctx,
 
   if (!ctx->shm_use) goto no_shm;
 
-  ctx->shm_info=gl_malloc(sizeof(XShmSegmentInfo));
+  ctx->shm_info=malloc(sizeof(XShmSegmentInfo));
   ctx->ximage=XShmCreateImage(ctx->display,None,depth,ZPixmap,NULL,
                               ctx->shm_info,xsize,ysize);
   if (ctx->ximage == NULL) {
     fprintf(stderr,"XShm: error: XShmCreateImage\n");
     ctx->shm_use=0;
-    gl_free(ctx->shm_info);
+    free(ctx->shm_info);
     goto no_shm;
   }
   ctx->shm_info->shmid=shmget(IPC_PRIVATE,
@@ -195,7 +195,7 @@ static int create_ximage(TinyGLXContext *ctx,
   no_shm:
     ctx->ximage=XCreateImage(ctx->display, None, depth, ZPixmap, 0, 
                              NULL,xsize,ysize, 8, 0);
-    framebuffer=gl_malloc(ysize * ctx->ximage->bytes_per_line);
+    framebuffer=malloc(ysize * ctx->ximage->bytes_per_line);
     ctx->ximage->data = framebuffer;
     return 0;
 }
@@ -207,9 +207,9 @@ static void free_ximage(TinyGLXContext *ctx)
     XShmDetach(ctx->display, ctx->shm_info);
     XDestroyImage(ctx->ximage);
     shmdt(ctx->shm_info->shmaddr);
-    gl_free(ctx->shm_info);
+    free(ctx->shm_info);
   } else {
-    gl_free(ctx->ximage->data);
+    free(ctx->ximage->data);
     XDestroyImage(ctx->ximage);
   }
 }
