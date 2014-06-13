@@ -115,7 +115,7 @@ static int create_ximage(TinyGLXContext *ctx,
 {
   int major,minor;
   Bool pixmaps;
-  unsigned char *framebuffer;
+  char *framebuffer;
   int (*old_handler)(Display *,XErrorEvent *);
 
   if (XShmQueryVersion(ctx->display,&major,&minor,&pixmaps))
@@ -261,7 +261,7 @@ Bool glXMakeCurrent( Display *dpy, GLXDrawable drawable,
   TinyGLXContext *ctx = (TinyGLXContext *) ctx1;
   XWindowAttributes attr;
   int i,xsize,ysize;
-  unsigned int palette[ZB_NB_COLORS];
+  int palette[ZB_NB_COLORS];
   unsigned char color_indexes[ZB_NB_COLORS];
   ZBuffer *zb;
   XColor xcolor;

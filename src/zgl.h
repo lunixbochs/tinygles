@@ -1,10 +1,13 @@
 #ifndef _tgl_zgl_h_
 #define _tgl_zgl_h_
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
 #include <assert.h>
+#include <math.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <GL/gl.h>
 #include "zbuffer.h"
 #include "zmath.h"

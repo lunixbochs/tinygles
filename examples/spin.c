@@ -10,13 +10,11 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <GL/glx.h> 
 #include <GL/gl.h> 
 #include "ui.h"
-
-
-
 
 static GLfloat Xrot, Xstep;
 static GLfloat Yrot, Ystep;
@@ -24,9 +22,6 @@ static GLfloat Zrot, Zstep;
 static GLfloat Step = 5.0;
 static GLfloat Scale = 1.0;
 static GLuint Object;
-
-
-
 
 static GLuint make_object( void )
 {

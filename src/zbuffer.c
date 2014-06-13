@@ -434,6 +434,7 @@ static void memset_short(void *adr, int val, int count)
 	*q++ = val;
 }
 
+#if TGL_FEATURE_RENDER_BITS == 32
 static void memset_long(void *adr, int val, int count)
 {
     int i, n, v;
@@ -454,6 +455,7 @@ static void memset_long(void *adr, int val, int count)
     for (i = 0; i < n; i++)
 	*p++ = val;
 }
+#endif
 
 /* count must be a multiple of 4 and >= 4 */
 void memset_RGB24(void *adr,int r, int v, int b,long count)
