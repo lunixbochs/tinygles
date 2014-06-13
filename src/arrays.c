@@ -7,6 +7,14 @@
 #define NORMAL_ARRAY   0x0004
 #define TEXCOORD_ARRAY 0x0008
 
+void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
+    glBegin(mode);
+    for (int i = first; i < first + count; i++) {
+        glArrayElement(i);
+    }
+    glEnd();
+}
+
 void glArrayElement(GLint idx)
 {
     GLContext *c = gl_get_context();
