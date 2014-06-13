@@ -410,7 +410,7 @@ void ZB_copyFrameBuffer(ZBuffer * zb, void *buf,
 /*
  * adr must be aligned on an 'int'
  */
-void memset_s(void *adr, int val, int count)
+static void memset_short(void *adr, int val, int count)
 {
     int i, n, v;
     unsigned int *p;
@@ -434,7 +434,7 @@ void memset_s(void *adr, int val, int count)
 	*q++ = val;
 }
 
-void memset_l(void *adr, int val, int count)
+static void memset_long(void *adr, int val, int count)
 {
     int i, n, v;
     unsigned int *p;
@@ -496,17 +496,17 @@ void ZB_clear(ZBuffer * zb, int clear_z, int z,
     PIXEL *pp;
 
     if (clear_z) {
-	memset_s(zb->zbuf, z, zb->xsize * zb->ysize);
+	memset_short(zb->zbuf, z, zb->xsize * zb->ysize);
     }
     if (clear_color) {
 	pp = zb->pbuf;
 	for (y = 0; y < zb->ysize; y++) {
 #if TGL_FEATURE_RENDER_BITS == 15 || TGL_FEATURE_RENDER_BITS == 16
             color = RGB_TO_PIXEL(r, g, b);
-	    memset_s(pp, color, zb->xsize);
+	    memset_short(pp, color, zb->xsize);
 #elif TGL_FEATURE_RENDER_BITS == 32
             color = RGB_TO_PIXEL(r, g, b);
-	    memset_l(pp, color, zb->xsize);
+	    memset_long(pp, color, zb->xsize);
 #elif TGL_FEATURE_RENDER_BITS == 24 
             memset_RGB24(pp,r>>8,g>>8,b>>8,zb->xsize);
 #else
