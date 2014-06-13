@@ -15,8 +15,7 @@ void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
     glEnd();
 }
 
-void glArrayElement(GLint idx)
-{
+void glArrayElement(GLint idx) {
     GLContext *c = gl_get_context();
     int i;
     int states = c->client_states;
