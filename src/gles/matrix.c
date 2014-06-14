@@ -188,14 +188,14 @@ void glFrustum(double left, double right, double bottom, double top, double near
   GLContext *c = gl_get_context();
   float *r;
   M4 m;
-  float x,y,A,B,C,D;
+  float x, y, A, B, C, D;
 
-  x = (2.0*near) / (right-left);
-  y = (2.0*near) / (top-bottom);
-  A = (right+left) / (right-left);
-  B = (top+bottom) / (top-bottom);
-  C = -(far+near) / ( far-near);
-  D = -(2.0*far*near) / (far-near);
+  x = (2.0 * near) / (right - left);
+  y = (2.0 * near) / (top - bottom);
+  A = (right + left) / (right - left);
+  B = (top + bottom) / (top - bottom);
+  C = -(far + near) / (far - near);
+  D = -(2.0 * far * near) / (far - near);
 
   r = &m.m[0][0];
   r[0]  = x; r[1]  = 0; r[2]  =  A; r[3]  = 0;
