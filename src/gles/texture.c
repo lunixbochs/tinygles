@@ -110,7 +110,7 @@ void glBindTexture(int target, int texture) {
     c->current_texture = t;
 }
 
-void glTexImage2D(int target, int level, int components,
+void glTexImage2D(int target, int level, int internalFormat,
                   int width, int height, int border,
                   int format, int type, void *pixels) {
     GLContext *c = gl_get_context();
@@ -118,7 +118,7 @@ void glTexImage2D(int target, int level, int components,
     unsigned char *pixels1;
     int do_free;
 
-    if (!(target == GL_TEXTURE_2D && level == 0 && components == 3 &&
+    if (!(target == GL_TEXTURE_2D && level == 0 && internalFormat == GL_RGB &&
             border == 0 && format == GL_RGB &&
             type == GL_UNSIGNED_BYTE)) {
         gl_fatal_error("glTexImage2D: combination of parameters not handled");
