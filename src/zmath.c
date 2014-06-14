@@ -12,7 +12,7 @@
 void gl_M4_Id(M4 *a) {
 	for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            if (i == j) a->m[i][j] = 1.0
+            if (i == j) a->m[i][j] = 1.0;
             else a->m[i][j] = 0.0;
         }
     }
@@ -44,7 +44,6 @@ void gl_M4_Mul(M4 *c, M4 *a, M4 *b) {
 
 /* c=c*a */
 void gl_M4_MulLeft(M4 *c, M4 *b) {
-    int i, j, k;
     float s;
     M4 a;
 
@@ -139,6 +138,7 @@ void gl_M4_InvOrtho(M4 *a, M4 b) {
    Note : m is destroyed */
 
 int Matrix_Inv(float *r, float *m, int n) {
+    int i, k;
     float max, tmp, t;
 
     /* identitée dans r */
@@ -213,7 +213,7 @@ void gl_M4_Rotate(M4 *a, float t, int u) {
     gl_M4_Id(a);
 
     a->m[v][v] = c;
-    a->m[v][w] =- s;
+    a->m[v][w] = -s;
     a->m[w][v] = s;
     a->m[w][w] = c;
 }

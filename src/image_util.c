@@ -72,7 +72,7 @@ void gl_resizeImage(unsigned char *dest, int xsize_dest, int ysize_dest, unsigne
                         pix_src[(yi * xsize_src + xi) * 3 + j],
                         pix_src[(yi * xsize_src + xi + 1) * 3 + j],
                         pix_src[((yi + 1) * xsize_src + xi) * 3 + j],
-                        xf, yf,
+                        xf, yf
                     );
                 }
             } else {
@@ -83,7 +83,7 @@ void gl_resizeImage(unsigned char *dest, int xsize_dest, int ysize_dest, unsigne
                         pix_src[((yi + 1) * xsize_src + xi + 1) * 3 + j],
                         pix_src[((yi + 1) * xsize_src + xi) * 3 + j],
                         pix_src[(yi * xsize_src + xi + 1) * 3 + j],
-                        xf, yf,
+                        xf, yf
                     );
                 }
             }

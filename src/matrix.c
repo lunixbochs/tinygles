@@ -110,15 +110,15 @@ void glRotatef(float angle, float x, float y, float z) {
             gl_M4_Id(&m);
             break;
         case 4:
-            if (u[0] < 0) angle =- angle;
+            if (u[0] < 0) angle = -angle;
             gl_M4_Rotate(&m, angle, 0);
             break;
         case 2:
-            if (u[1] < 0) angle =- angle;
+            if (u[1] < 0) angle = -angle;
             gl_M4_Rotate(&m, angle, 1);
             break;
         case 1:
-            if (u[2] < 0) angle =- angle;
+            if (u[2] < 0) angle = -angle;
             gl_M4_Rotate(&m, angle, 2);
             break;
         default:

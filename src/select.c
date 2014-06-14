@@ -9,7 +9,7 @@ int glRenderMode(int mode) {
             break;
         case GL_SELECT:
             if (c->select_overflow) {
-                result =- c->select_hits;
+                result = -c->select_hits;
             } else {
                 result = c->select_hits;
             }
