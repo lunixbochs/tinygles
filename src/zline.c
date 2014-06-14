@@ -1,10 +1,9 @@
 #include <stdlib.h>
 #include "zbuffer.h"
 
-#define ZCMP(z,zpix) ((z) >= (zpix))
+#define ZCMP(z, zpix) ((z) >= (zpix))
 
-void ZB_plot(ZBuffer * zb, ZBufferPoint * p)
-{
+void ZB_plot(ZBuffer *zb, ZBufferPoint *p) {
     unsigned short *pz;
     PIXEL *pp;
     int zz;
@@ -18,43 +17,36 @@ void ZB_plot(ZBuffer * zb, ZBufferPoint * p)
         pp[1]=p->g>>8;
         pp[2]=p->b>>8;
 #else
-	*pp = RGB_TO_PIXEL(p->r, p->g, p->b);
+        *pp = RGB_TO_PIXEL(p->r, p->g, p->b);
 #endif
-	*pz = zz;
+        *pz = zz;
     }
 }
 
 #define INTERP_Z
-static void ZB_line_flat_z(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2, 
-                           int color)
-{
+static void ZB_line_flat_z(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2, int color) {
 #include "zline.h"
 }
 
 /* line with color interpolation */
 #define INTERP_Z
 #define INTERP_RGB
-static void ZB_line_interp_z(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2)
-{
+static void ZB_line_interp_z(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2) {
 #include "zline.h"
 }
 
 /* no Z interpolation */
 
-static void ZB_line_flat(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2, 
-                             int color)
-{
+static void ZB_line_flat(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2, int color) {
 #include "zline.h"
 }
 
 #define INTERP_RGB
-static void ZB_line_interp(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2)
-{
+static void ZB_line_interp(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2) {
 #include "zline.h"
 }
 
-void ZB_line_z(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2)
-{
+void ZB_line_z(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2) {
     int color1, color2;
 
     color1 = RGB_TO_PIXEL(p1->r, p1->g, p1->b);
@@ -68,8 +60,7 @@ void ZB_line_z(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2)
     }
 }
 
-void ZB_line(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2)
-{
+void ZB_line(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2) {
     int color1, color2;
 
     color1 = RGB_TO_PIXEL(p1->r, p1->g, p1->b);

@@ -15,10 +15,10 @@
 #endif
 
     if (p1->y > p2->y || (p1->y == p2->y && p1->x > p2->x)) {
-	ZBufferPoint *tmp;
-	tmp = p1;
-	p1 = p2;
-	p2 = tmp;
+        ZBufferPoint *tmp;
+        tmp = p1;
+        p1 = p2;
+        p2 = tmp;
     }
     sx = zb->xsize;
     pp = (PIXEL *) ((char *) zb->pbuf + zb->linesize * p1->y + p1->x * PSZB);
@@ -59,13 +59,13 @@
 #ifdef INTERP_Z
 #define ZZ(x) x
 #define PUTPIXEL() 				\
-  {						\
-    zz=z >> ZB_POINT_Z_FRAC_BITS;		\
-    if (ZCMP(zz,*pz))  { 			\
-      RGBPIXEL;	\
-      *pz=zz; 					\
-    }						\
-  }
+    {						\
+        zz=z >> ZB_POINT_Z_FRAC_BITS;		\
+        if (ZCMP(zz,*pz))  { 			\
+            RGBPIXEL;	\
+            *pz=zz; 					\
+        }						\
+    }
 #else /* INTERP_Z */
 #define ZZ(x)
 #define PUTPIXEL() RGBPIXEL
@@ -75,8 +75,8 @@
     n=dx;\
     ZZ(zinc=(p2->z-p1->z)/n);\
     RGB(rinc=((p2->r-p1->r) << 8)/n;\
-        ginc=((p2->g-p1->g) << 8)/n;\
-        binc=((p2->b-p1->b) << 8)/n);\
+            ginc=((p2->g-p1->g) << 8)/n;\
+            binc=((p2->b-p1->b) << 8)/n);\
     a=2*dy-dx;\
     dy=2*dy;\
     dx=2*dx-dy;\
@@ -87,26 +87,26 @@
         ZZ(z+=zinc);\
         RGB(r+=rinc;g+=ginc;b+=binc);\
         if (a>0) { pp=(PIXEL *)((char *)pp + pp_inc_1); ZZ(pz+=(inc_1));  a-=dx; }\
-	else { pp=(PIXEL *)((char *)pp + pp_inc_2); ZZ(pz+=(inc_2)); a+=dy; }\
+        else { pp=(PIXEL *)((char *)pp + pp_inc_2); ZZ(pz+=(inc_2)); a+=dy; }\
     } while (--n >= 0);
 
-/* fin macro */
+    /* fin macro */
 
     if (dx == 0 && dy == 0) {
-	PUTPIXEL();
+        PUTPIXEL();
     } else if (dx > 0) {
-	if (dx >= dy) {
-	    DRAWLINE(dx, dy, sx + 1, 1);
-	} else {
-	    DRAWLINE(dy, dx, sx + 1, sx);
-	}
+        if (dx >= dy) {
+            DRAWLINE(dx, dy, sx + 1, 1);
+        } else {
+            DRAWLINE(dy, dx, sx + 1, sx);
+        }
     } else {
-	dx = -dx;
-	if (dx >= dy) {
-	    DRAWLINE(dx, dy, sx - 1, -1);
-	} else {
-	    DRAWLINE(dy, dx, sx - 1, sx);
-	}
+        dx = -dx;
+        if (dx >= dy) {
+            DRAWLINE(dx, dy, sx - 1, -1);
+        } else {
+            DRAWLINE(dy, dx, sx - 1, sx);
+        }
     }
 }
 
