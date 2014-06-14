@@ -184,7 +184,7 @@ void glTranslatef(float x, float y, float z) {
     gl_matrix_update(c);
 }
 
-void glFrustum(double left, double right, double bottom, double top, double near, double far) {
+void glFrustumf(float left, float right, float bottom, float top, float near, float far) {
   GLContext *c = gl_get_context();
   float *r;
   M4 m;
