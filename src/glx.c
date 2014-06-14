@@ -212,8 +212,8 @@ int glX_resize_viewport(GLContext *c, int *xsize_ptr, int *ysize_ptr) {
 
     /* we ensure that xsize and ysize are multiples of 2 for the zbuffer.
 TODO: find a better solution */
-    xsize& = ~3;
-    ysize& = ~3;
+    xsize &= ~3;
+    ysize &= ~3;
 
     if (xsize == 0 || ysize == 0) return -1;
 
