@@ -7,6 +7,18 @@
 #define NORMAL_ARRAY   0x0004
 #define TEXCOORD_ARRAY 0x0008
 
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices) {
+    glBegin(mode);
+    if (type != GL_UNSIGNED_SHORT) {
+        printf("tinygles: can't handle type 0x%04x in glDrawElements\n", type);
+    }
+    const GLshort *shorts = indices;
+    for (int i = 0; i < count; i++) {
+        glArrayElement(shorts[i]);
+    }
+    glEnd();
+}
+
 void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
     glBegin(mode);
     for (int i = first; i < first + count; i++) {
