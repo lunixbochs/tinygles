@@ -211,7 +211,7 @@ int glX_resize_viewport(GLContext *c, int *xsize_ptr, int *ysize_ptr) {
     ysize = *ysize_ptr;
 
     /* we ensure that xsize and ysize are multiples of 2 for the zbuffer.
-TODO: find a better solution */
+       TODO: find a better solution */
     xsize &= ~3;
     ysize &= ~3;
 
@@ -239,104 +239,104 @@ TODO: find a better solution */
 
 /* we assume here that drawable is a window */
 Bool glXMakeCurrent(Display *dpy, GLXDrawable drawable, GLXContext ctx1) {
-  TinyGLXContext *ctx = (TinyGLXContext *)ctx1;
-  XWindowAttributes attr;
-  int i, xsize, ysize;
-  int palette[ZB_NB_COLORS];
-  unsigned char color_indexes[ZB_NB_COLORS];
-  ZBuffer *zb;
-  XColor xcolor;
-  unsigned long pixel[ZB_NB_COLORS], tmp_plane;
+    TinyGLXContext *ctx = (TinyGLXContext *)ctx1;
+    XWindowAttributes attr;
+    int i, xsize, ysize;
+    int palette[ZB_NB_COLORS];
+    unsigned char color_indexes[ZB_NB_COLORS];
+    ZBuffer *zb;
+    XColor xcolor;
+    unsigned long pixel[ZB_NB_COLORS], tmp_plane;
 
-  if (ctx->gl_context == NULL) {
-    /* create the TinyGL context */
+    if (ctx->gl_context == NULL) {
+        /* create the TinyGL context */
 
-    ctx->display = dpy;
-    ctx->drawable = drawable;
+        ctx->display = dpy;
+        ctx->drawable = drawable;
 
-    XGetWindowAttributes(ctx->display, drawable, &attr);
+        XGetWindowAttributes(ctx->display, drawable, &attr);
 
-    xsize = attr.width;
-    ysize = attr.height;
+        xsize = attr.width;
+        ysize = attr.height;
 
-    if (attr.depth != ctx->visual_info.depth) return False;
+        if (attr.depth != ctx->visual_info.depth) return False;
 
-    /* ximage structure */
-    ctx->ximage = NULL;
-    ctx->shm_use = 1; /* use shm */
+        /* ximage structure */
+        ctx->ximage = NULL;
+        ctx->shm_use = 1; /* use shm */
 
-    if (attr.depth == 8) {
-      /* get the colormap from the window */
-      ctx->cmap = attr.colormap;
+        if (attr.depth == 8) {
+            /* get the colormap from the window */
+            ctx->cmap = attr.colormap;
 
-      if ( XAllocColorCells(ctx->display, ctx->cmap, True, &tmp_plane, 0, pixel, ZB_NB_COLORS) == 0) {
-        /* private cmap */
-        ctx->cmap = XCreateColormap(ctx->display, drawable, ctx->visual_info.visual, AllocAll);
-        XSetWindowColormap(ctx->display, drawable, ctx->cmap);
-        for(i = 0;i < ZB_NB_COLORS; i++) pixel[i] = i;
-      }
+            if ( XAllocColorCells(ctx->display, ctx->cmap, True, &tmp_plane, 0, pixel, ZB_NB_COLORS) == 0) {
+                /* private cmap */
+                ctx->cmap = XCreateColormap(ctx->display, drawable, ctx->visual_info.visual, AllocAll);
+                XSetWindowColormap(ctx->display, drawable, ctx->cmap);
+                for(i = 0;i < ZB_NB_COLORS; i++) pixel[i] = i;
+            }
 
-      for(i = 0;i < ZB_NB_COLORS; i++) color_indexes[i] = pixel[i];
+            for(i = 0;i < ZB_NB_COLORS; i++) color_indexes[i] = pixel[i];
 
-      /* Open the Z Buffer - 256 colors */
-      zb = ZB_open(xsize, ysize, ZB_MODE_INDEX, ZB_NB_COLORS, color_indexes, palette, NULL);
-      if (zb == NULL) {
-        fprintf(stderr, "Error while initializing Z buffer\n");
-        exit(1);
-      }
+            /* Open the Z Buffer - 256 colors */
+            zb = ZB_open(xsize, ysize, ZB_MODE_INDEX, ZB_NB_COLORS, color_indexes, palette, NULL);
+            if (zb == NULL) {
+                fprintf(stderr, "Error while initializing Z buffer\n");
+                exit(1);
+            }
 
-      for (i = 0; i < ZB_NB_COLORS; i++) {
-        xcolor.flags = DoRed | DoGreen | DoBlue;
+            for (i = 0; i < ZB_NB_COLORS; i++) {
+                xcolor.flags = DoRed | DoGreen | DoBlue;
 
-        xcolor.red = (palette[i]>>8) & 0xFF00;
-        xcolor.green = (palette[i] & 0xFF00);
-        xcolor.blue = (palette[i] << 8) & 0xFF00;
-        xcolor.pixel = pixel[i];
-        XStoreColor(ctx->display, ctx->cmap, &xcolor);
-      }
-      ctx->do_convert = 1;
-    } else {
-        int mode, bpp;
-        /* RGB 16/24/32 */
-        bpp = bits_per_pixel(ctx->display, &ctx->visual_info);
-        switch(bpp) {
-        case 24:
-            mode = ZB_MODE_RGB24;
-            ctx->do_convert = (TGL_FEATURE_RENDER_BITS != 16);
-            break;
-        case 32:
-            mode = ZB_MODE_RGBA;
-            ctx->do_convert = (TGL_FEATURE_RENDER_BITS != 16);
-            break;
-        default:
-            mode = ZB_MODE_5R6G5B;
-            ctx->do_convert = (TGL_FEATURE_RENDER_BITS != 16);
-            break;
+                xcolor.red = (palette[i]>>8) & 0xFF00;
+                xcolor.green = (palette[i] & 0xFF00);
+                xcolor.blue = (palette[i] << 8) & 0xFF00;
+                xcolor.pixel = pixel[i];
+                XStoreColor(ctx->display, ctx->cmap, &xcolor);
+            }
+            ctx->do_convert = 1;
+        } else {
+            int mode, bpp;
+            /* RGB 16/24/32 */
+            bpp = bits_per_pixel(ctx->display, &ctx->visual_info);
+            switch(bpp) {
+                case 24:
+                    mode = ZB_MODE_RGB24;
+                    ctx->do_convert = (TGL_FEATURE_RENDER_BITS != 16);
+                    break;
+                case 32:
+                    mode = ZB_MODE_RGBA;
+                    ctx->do_convert = (TGL_FEATURE_RENDER_BITS != 16);
+                    break;
+                default:
+                    mode = ZB_MODE_5R6G5B;
+                    ctx->do_convert = (TGL_FEATURE_RENDER_BITS != 16);
+                    break;
+            }
+            zb = ZB_open(xsize, ysize, mode, 0, NULL, NULL, NULL);
+            if (zb == NULL) {
+                fprintf(stderr, "Error while initializing Z buffer\n");
+                exit(1);
+            }
         }
-        zb = ZB_open(xsize, ysize, mode, 0, NULL, NULL, NULL);
-        if (zb == NULL) {
-            fprintf(stderr, "Error while initializing Z buffer\n");
-            exit(1);
-        }
+
+        /* create a gc */
+        ctx->gc = XCreateGC(ctx->display, drawable, 0, 0);
+
+        /* initialisation of the TinyGL interpreter */
+        glInit(zb);
+        ctx->gl_context = gl_get_context();
+        ctx->gl_context->opaque=(void *) ctx;
+        ctx->gl_context->gl_resize_viewport = glX_resize_viewport;
+
+        /* set the viewport : we force a call to glX_resize_viewport */
+        ctx->gl_context->viewport.xsize=-1;
+        ctx->gl_context->viewport.ysize=-1;
+
+        glViewport(0, 0, xsize, ysize);
     }
 
-    /* create a gc */
-    ctx->gc = XCreateGC(ctx->display, drawable, 0, 0);
-
-    /* initialisation of the TinyGL interpreter */
-    glInit(zb);
-    ctx->gl_context = gl_get_context();
-    ctx->gl_context->opaque=(void *) ctx;
-    ctx->gl_context->gl_resize_viewport = glX_resize_viewport;
-
-    /* set the viewport : we force a call to glX_resize_viewport */
-    ctx->gl_context->viewport.xsize=-1;
-    ctx->gl_context->viewport.ysize=-1;
-
-    glViewport(0, 0, xsize, ysize);
-  }
-
-  return True;
+    return True;
 }
 
 static Bool WaitForShmCompletion(Display *dpy, XEvent *event, char *arg) {

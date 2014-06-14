@@ -6,7 +6,7 @@
 
 typedef struct {
     GLContext *gl_context;
-    int xsize,ysize;
+    int xsize, ysize;
     GR_DRAW_ID drawable;
     GR_GC_ID gc;
     int pixtype; /* pixel type in TinyGL */
