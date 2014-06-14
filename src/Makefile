@@ -3,13 +3,10 @@ include ../config.mk
 OBJS= api.o vertex.o init.o matrix.o texture.o \
       misc.o clear.o light.o clip.o select.o get.o error.o \
       zbuffer.o zline.o zdither.o ztriangle.o \
-      zmath.o image_util.o oscontext.o msghandling.o \
+      zmath.o image_util.o msghandling.o \
       arrays.o specbuf.o context.o
 ifdef TINYGL_USE_GLX
 OBJS += glx.o
-endif
-ifdef TINYGL_USE_NANOX
-OBJS += nglx.o
 endif
 
 INCLUDES = -I../include
@@ -35,7 +32,6 @@ matrix.o: zgl.h zfeatures.h
 arrays.c: zgl.h zfeatures.h
 specbuf.o: zgl.h zfeatures.h
 glx.o: zgl.h zfeatures.h
-nglx.o: zgl.h zfeatures.h
 zline.o: zgl.h zfeatures.h zline.h
 
 ztriangle.o: ztriangle.c ztriangle.h zgl.h zfeatures.h

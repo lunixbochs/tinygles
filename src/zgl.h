@@ -307,10 +307,6 @@ void gl_fatal_error(char *format, ...);
 /* specular buffer "api" */
 GLSpecBuf *specbuf_get_buffer(GLContext *c, const int shininess_i, const float shininess);
 
-#ifdef __BEOS__
-void dprintf(const char *, ...);
-
-#else /* !BEOS */
 
 #ifdef DEBUG
 
@@ -322,7 +318,6 @@ void dprintf(const char *, ...);
 #define dprintf(format, args...)
 
 #endif
-#endif /* !BEOS */
 
 /* this clip epsilon is needed to avoid some rounding errors after
    several clipping stages */
