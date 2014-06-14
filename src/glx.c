@@ -182,6 +182,7 @@ no_shm2:
 no_shm:
     ctx->ximage = XCreateImage(ctx->display, None, depth, ZPixmap, 0, NULL, xsize, ysize, 8, 0);
     framebuffer = malloc(ysize * ctx->ximage->bytes_per_line);
+    free(ctx->ximage->data);
     ctx->ximage->data = framebuffer;
     return 0;
 }
@@ -193,7 +194,6 @@ static void free_ximage(TinyGLXContext *ctx) {
         shmdt(ctx->shm_info->shmaddr);
         free(ctx->shm_info);
     } else {
-        free(ctx->ximage->data);
         XDestroyImage(ctx->ximage);
     }
 }
