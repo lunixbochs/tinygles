@@ -1,6 +1,11 @@
 #include <stdarg.h>
 #include "zgl.h"
 
+// TODO
+GLenum glGetError() {
+    return 0;
+}
+
 void gl_fatal_error(char *format, ...) {
     va_list ap;
 
