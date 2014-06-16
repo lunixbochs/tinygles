@@ -5,7 +5,6 @@
    header file. */
 
 #define TGL_FEATURE_ARRAYS         1
-#define TGL_FEATURE_DISPLAYLISTS   1
 #define TGL_FEATURE_POLYGON_OFFSET 1
 
 /*
