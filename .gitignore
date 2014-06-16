@@ -6,3 +6,4 @@ CMakeFiles
 bin
 lib
 cmake_install.cmake
+Makefile
