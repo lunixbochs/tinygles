@@ -51,9 +51,9 @@ void glMaterialfv(GLenum face, GLenum pname, const GLfloat *v) {
 }
 
 void glColorMaterial(GLenum face, GLenum mode) {
-  GLContext *c = gl_get_context();
-  c->current_color_material_mode = face;
-  c->current_color_material_type = mode;
+    GLContext *c = gl_get_context();
+    c->current_color_material_mode = face;
+    c->current_color_material_type = mode;
 }
 
 void glLightf(GLenum light, GLenum pname, GLfloat param) {
