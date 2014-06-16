@@ -184,7 +184,7 @@ void gl_shade_vertex(GLContext *c, GLVertex *v) {
     GLMaterial *m;
     GLLight *l;
     V3 n, s, d;
-    float dist, tmp, att, dot, dot_spot, dot_spec;
+    float dist, tmp, att;
     int twoside = c->light_model_two_side;
 
     m = &c->materials[0];
@@ -226,9 +226,9 @@ void gl_shade_vertex(GLContext *c, GLVertex *v) {
             }
             att = 1.0f / (l->attenuation[0] + dist * (l->attenuation[1] + dist * l->attenuation[2]));
         }
-        dot = d.X * n.X + d.Y * n.Y + d.Z * n.Z;
+        float dot = d.X * n.X + d.Y * n.Y + d.Z * n.Z;
         if (twoside && dot < 0) dot = -dot;
-        if (dot>0) {
+        if (dot > 0) {
             /* diffuse light */
             lR += dot * l->diffuse.v[0] * m->diffuse.v[0];
             lG += dot * l->diffuse.v[1] * m->diffuse.v[1];
@@ -236,7 +236,7 @@ void gl_shade_vertex(GLContext *c, GLVertex *v) {
 
             /* spot light */
             if (l->spot_cutoff != 180) {
-                dot_spot = -(d.X * l->norm_spot_direction.v[0] + d.Y * l->norm_spot_direction.v[1] + d.Z * l->norm_spot_direction.v[2]);
+                float dot_spot = -(d.X * l->norm_spot_direction.v[0] + d.Y * l->norm_spot_direction.v[1] + d.Z * l->norm_spot_direction.v[2]);
                 if (twoside && dot_spot < 0) dot_spot = -dot_spot;
                 if (dot_spot < l->cos_spot_cutoff) {
                     /* no contribution */
@@ -265,7 +265,7 @@ void gl_shade_vertex(GLContext *c, GLVertex *v) {
                 s.Y = d.Y;
                 s.Z = d.Z + 1.0;
             }
-            dot_spec = n.X * s.X + n.Y * s.Y + n.Z * s.Z;
+            float dot_spec = n.X * s.X + n.Y * s.Y + n.Z * s.Z;
             if (twoside && dot_spec < 0) dot_spec = -dot_spec;
             if (dot_spec > 0) {
                 GLSpecBuf *specbuf;
