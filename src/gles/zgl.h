@@ -311,6 +311,8 @@ GLContext *gl_get_context(void);
 
 void gl_fatal_error(char *format, ...);
 
+void glClose(void);
+void glInit(void *zbuffer1);
 
 /* specular buffer "api" */
 GLSpecBuf *specbuf_get_buffer(GLContext *c, const int shininess_i, const float shininess);
