@@ -136,6 +136,10 @@ typedef struct GLSharedState {
     GLTexture **texture_hash_table;
 } GLSharedState;
 
+typedef struct {
+    float x, y, z;
+} GLRasterPos;
+
 struct GLContext;
 
 typedef void (*gl_draw_triangle_func)(struct GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2); 
@@ -259,6 +263,9 @@ typedef struct GLContext {
 
     /* depth test */
     int depth_test;
+
+    // TODO: glPushAttrib
+    GLRasterPos raster_pos;
 } GLContext;
 
 extern GLContext *gl_ctx;
