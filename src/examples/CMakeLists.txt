@@ -1,6 +1,6 @@
 set(COMMON glu.c x11.c)
 
-link_libraries(GL X11)
+link_libraries(GL X11 m)
 add_executable(texobj ${COMMON} texobj.c)
 add_executable(spin ${COMMON} spin.c)
 add_executable(gears ${COMMON} gears.c)
