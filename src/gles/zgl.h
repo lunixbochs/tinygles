@@ -36,7 +36,6 @@
 
 #define VERTEX_HASH_SIZE 1031
 
-#define MAX_DISPLAY_LISTS 1024
 #define OP_BUFFER_MAX_SIZE 512
 
 #define TGL_OFFSET_FILL    0x1
@@ -101,11 +100,6 @@ typedef struct GLParamBuffer {
     struct GLParamBuffer *next;
 } GLParamBuffer;
 
-typedef struct GLList {
-    GLParamBuffer *first_op_buffer;
-    /* TODO: extensions for an hash table or a better allocating scheme */
-} GLList;
-
 typedef struct GLVertex {
     int edge_flag;
     V3 normal;
@@ -139,7 +133,6 @@ typedef struct GLTexture {
 /* shared state */
 
 typedef struct GLSharedState {
-    GLList **lists;
     GLTexture **texture_hash_table;
 } GLSharedState;
 

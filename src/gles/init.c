@@ -4,7 +4,6 @@ GLContext *gl_ctx;
 
 void initSharedState(GLContext *c) {
     GLSharedState *s = &c->shared_state;
-    s->lists=calloc(1, sizeof(GLList *) * MAX_DISPLAY_LISTS);
     s->texture_hash_table = calloc(1, sizeof(GLTexture *) * TEXTURE_HASH_TABLE_SIZE);
 
     alloc_texture(c, 0);
@@ -12,13 +11,6 @@ void initSharedState(GLContext *c) {
 
 void endSharedState(GLContext *c) {
     GLSharedState *s = &c->shared_state;
-    int i;
-
-    for (i = 0; i < MAX_DISPLAY_LISTS; i++) {
-        /* TODO */
-    }
-    free(s->lists);
-
     free(s->texture_hash_table);
 }
 
