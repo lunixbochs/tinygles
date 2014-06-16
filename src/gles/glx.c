@@ -9,7 +9,7 @@ typedef struct {
     GLContext *gl_context;
     Display *display;
     XVisualInfo visual_info;
-    int xsize,ysize;
+    int xsize, ysize;
     XImage *ximage;
     GC gc;
     Colormap cmap;
@@ -50,7 +50,7 @@ XVisualInfo* glXChooseVisual(Display *dpy, int screen, int *attribList) {
         return NULL;
     }
 
-    return XGetVisualInfo(dpy,VisualAllMask,&vinfo,&n);
+    return XGetVisualInfo(dpy, VisualAllMask, &vinfo, &n);
 }
 
 
@@ -362,7 +362,7 @@ void glXSwapBuffers(Display *dpy, GLXDrawable drawable) {
     if (ctx->shm_use) {
         XEvent event;
 
-        XShmPutImage(dpy,drawable,ctx->gc, ctx->ximage, 0, 0, 0, 0, ctx->ximage->width, ctx->ximage->height, True);
+        XShmPutImage(dpy, drawable, ctx->gc, ctx->ximage, 0, 0, 0, 0, ctx->ximage->width, ctx->ximage->height, True);
         XIfEvent(dpy, &event, WaitForShmCompletion, (char*)ctx);
     } else {
         XPutImage(dpy, drawable, ctx->gc, ctx->ximage, 0, 0, 0, 0, ctx->ximage->width, ctx->ximage->height);
