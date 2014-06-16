@@ -16,6 +16,14 @@
 #define DEBUG
 /* #define NDEBUG */
 
+#ifndef MIN
+#define MIN(a, b) (((a) < (b) ? (a) : (b)))
+#endif
+
+#ifndef MAX
+#define MAX(a, b) (((a) > (b) ? (a) : (b)))
+#endif
+
 /* initially # of allocated GLVertexes (will grow when necessary) */
 #define POLYGON_MAX_VERTEX 16
 

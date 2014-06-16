@@ -1,6 +1,6 @@
 #include "zgl.h"
 
-int glRenderMode(int mode) {
+int glRenderMode(GLenum mode) {
     GLContext *c = gl_get_context();
     int result = 0;
 
@@ -38,7 +38,7 @@ int glRenderMode(int mode) {
     return result;
 }
 
-void glSelectBuffer(int size, unsigned int *buf) {
+void glSelectBuffer(GLsizei size, GLuint *buf) {
     GLContext *c = gl_get_context();
 
     assert(c->render_mode != GL_SELECT);
@@ -56,7 +56,7 @@ void glInitNames() {
     }
 }
 
-void glPushName(unsigned int name) {
+void glPushName(GLuint name) {
     GLContext *c = gl_get_context();
     if (c->render_mode == GL_SELECT) {
         assert(c->name_stack_size < MAX_NAME_STACK_DEPTH);
@@ -74,7 +74,7 @@ void glPopName() {
     }
 }
 
-void glLoadName(unsigned int name) {
+void glLoadName(GLuint name) {
     GLContext *c = gl_get_context();
     if (c->render_mode == GL_SELECT) {
         assert(c->name_stack_size > 0);

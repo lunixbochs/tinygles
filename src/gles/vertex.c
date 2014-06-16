@@ -1,6 +1,6 @@
 #include "zgl.h"
 
-void glNormal3f(float x, float y, float z) {
+void glNormal3f(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
     c->current_normal.X = x;
     c->current_normal.Y = y;
@@ -8,7 +8,7 @@ void glNormal3f(float x, float y, float z) {
     c->current_normal.W = 0;
 }
 
-void glTexCoord4f(float s, float t, float r, float q) {
+void glTexCoord4f(GLfloat s, GLfloat t, GLfloat r, GLfloat q) {
     GLContext *c = gl_get_context();
     c->current_tex_coord.X = s;
     c->current_tex_coord.Y = t;
@@ -16,12 +16,12 @@ void glTexCoord4f(float s, float t, float r, float q) {
     c->current_tex_coord.W = q;
 }
 
-void glEdgeFlag(int flag) {
+void glEdgeFlag(GLboolean flag) {
     GLContext *c = gl_get_context();
     c->current_edge_flag = flag;
 }
 
-void glColor4f(float r, float g, float b, float a) {
+void glColor4f(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
     GLContext *c = gl_get_context();
     c->current_color.X = r;
     c->current_color.Y = g;
@@ -33,7 +33,7 @@ void glColor4f(float r, float g, float b, float a) {
     c->longcurrent_color[2] = (unsigned int) (b * (ZB_POINT_BLUE_MAX - ZB_POINT_BLUE_MIN) + ZB_POINT_BLUE_MIN);
 
     if (c->color_material_enabled) {
-        float color[4] = {r, g, b, a};
+        GLfloat color[4] = {r, g, b, a};
         glMaterialfv(c->current_color_material_mode, c->current_color_material_type, color);
     }
 }
@@ -54,7 +54,7 @@ void gl_eval_viewport(GLContext * c) {
     v->scale.Z = -((zsize - 0.5) / 2.0);
 }
 
-void glBegin(int type) {
+void glBegin(GLenum type) {
     GLContext *c = gl_get_context();
     M4 tmp;
 
@@ -125,7 +125,7 @@ void glBegin(int type) {
 
 /* coords, tranformation , clip code and projection */
 /* TODO : handle all cases */
-static inline void gl_vertex_transform(GLContext * c, GLVertex * v) {
+static inline void gl_vertex_transform(GLContext *c, GLVertex *v) {
     float *m;
     V4 *n;
 
@@ -173,7 +173,7 @@ static inline void gl_vertex_transform(GLContext * c, GLVertex * v) {
     v->clip_code = gl_clipcode(v->pc.X, v->pc.Y, v->pc.Z, v->pc.W);
 }
 
-void glVertex4f(float x, float y, float z, float w) {
+void glVertex4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w) {
     GLContext *c = gl_get_context();
     GLVertex *v;
     int n, i, cnt;

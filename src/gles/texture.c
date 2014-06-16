@@ -81,7 +81,7 @@ void glGenTextures(int n, unsigned int *textures) {
 }
 
 
-void glDeleteTextures(int n, const unsigned int *textures) {
+void glDeleteTextures(GLsizei n, const GLuint *textures) {
     GLContext *c = gl_get_context();
     GLTexture *t;
 
@@ -97,7 +97,7 @@ void glDeleteTextures(int n, const unsigned int *textures) {
 }
 
 
-void glBindTexture(int target, int texture) {
+void glBindTexture(GLenum target, GLuint texture) {
     GLContext *c = gl_get_context();
     GLTexture *t;
 
@@ -110,9 +110,9 @@ void glBindTexture(int target, int texture) {
     c->current_texture = t;
 }
 
-void glTexImage2D(int target, int level, int internalFormat,
-                  int width, int height, int border,
-                  int format, int type, void *pixels) {
+void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
+                  GLsizei width, GLsizei height, GLint border,
+                  GLenum format, GLenum type, const GLvoid *pixels) {
     GLContext *c = gl_get_context();
     GLImage *im;
     unsigned char *pixels1;
@@ -128,12 +128,14 @@ void glTexImage2D(int target, int level, int internalFormat,
     if (width != 256 || height != 256) {
         pixels1 = malloc(256 * 256 * 3);
         /* no interpolation is done here to respect the original image aliasing ! */
-        gl_resizeImageNoInterpolate(pixels1, 256, 256, pixels, width, height);
+        // TODO: better type conversion
+        gl_resizeImageNoInterpolate(pixels1, 256, 256, (GLubyte *)pixels, width, height);
         do_free = 1;
         width = 256;
         height = 256;
     } else {
-        pixels1 = pixels;
+        // TODO: better type conversion
+        pixels1 = (GLubyte *)pixels;
     }
 
     im = &c->current_texture->images[level];
@@ -163,7 +165,7 @@ void glTexImage2D(int target, int level, int internalFormat,
 
 
 /* TODO: not all tests are done */
-void glTexEnvi(int target, int pname, int param) {
+void glTexEnvi(GLenum target, GLenum pname, GLint param) {
     if (target != GL_TEXTURE_ENV) {
 error:
         gl_fatal_error("glTexEnvi: unsupported option");
@@ -175,7 +177,7 @@ error:
 }
 
 /* TODO: not all tests are done */
-void glTexParameteri(int target, int pname, int param) {
+void glTexParameteri(GLenum target, GLenum pname, GLint param) {
     if (target != GL_TEXTURE_2D) {
 error:
         gl_fatal_error("glTexParameter: unsupported option");
@@ -189,7 +191,7 @@ error:
     }
 }
 
-void glPixelStorei(int pname, int param) {
+void glPixelStorei(GLenum pname, GLint param) {
     if (pname != GL_UNPACK_ALIGNMENT || param != 1) {
         gl_fatal_error("glPixelStore: unsupported option");
     }

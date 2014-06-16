@@ -13,7 +13,7 @@ void glClearDepth(double depth) {
     c->clear_depth = depth;
 }
 
-void glClear(int mask) {
+void glClear(GLbitfield mask) {
     GLContext *c = gl_get_context();
     int z = 0;
     int r = (int)(c->clear_color.v[0]*65535);

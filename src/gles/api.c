@@ -9,17 +9,17 @@ void glVertex3f(float x, float y, float z) {
     glVertex4f(x,y,z,1);
 }
 
-void glVertex3fv(float *v) {
+void glVertex3fv(const float *v) {
     glVertex4f(v[0], v[1], v[2], 1);
 }
 
 /* glNormal */
-void glNormal3fv(float *v) {
+void glNormal3fv(const float *v) {
     glNormal3f(v[0], v[1], v[2]);
 }
 
 /* glColor */
-void glColor4fv(float *v) {
+void glColor4fv(const float *v) {
     glColor4f(v[0], v[1], v[2], v[3]);
 }
 
@@ -27,7 +27,7 @@ void glColor3f(float x, float y, float z) {
     glColor4f(x, y, z, 1);
 }
 
-void glColor3fv(float *v) {
+void glColor3fv(const float *v) {
     glColor4f(v[0], v[1], v[2], 1);
 }
 
@@ -36,7 +36,7 @@ void glTexCoord2f(float s, float t) {
     glTexCoord4f(s, t, 0, 1);
 }
 
-void glTexCoord2fv(float *v) {
+void glTexCoord2fv(const float *v) {
     glTexCoord4f(v[0], v[1], 0, 1);
 }
 

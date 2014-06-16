@@ -10,7 +10,7 @@ static inline void gl_matrix_update(GLContext *c) {
     c->matrix_model_projection_updated = (c->matrix_mode <= 1);
 }
 
-void glMatrixMode(int mode) {
+void glMatrixMode(GLenum mode) {
     GLContext *c = gl_get_context();
     switch(mode) {
         case GL_MODELVIEW:
@@ -27,7 +27,7 @@ void glMatrixMode(int mode) {
     }
 }
 
-void glLoadMatrixf(const float *matrix) {
+void glLoadMatrixf(const GLfloat *matrix) {
     GLContext *c = gl_get_context();
     M4 *m;
     m=c->matrix_stack_ptr[c->matrix_mode];
@@ -50,7 +50,7 @@ void glLoadIdentity() {
     gl_matrix_update(c);
 }
 
-void glMultMatrixf(const float *matrix) {
+void glMultMatrixf(const GLfloat *matrix) {
     GLContext *c = gl_get_context();
     M4 m;
 
@@ -91,7 +91,7 @@ void glPopMatrix() {
     gl_matrix_update(c);
 }
 
-void glRotatef(float angle, float x, float y, float z) {
+void glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
     M4 m;
     float u[3];
@@ -159,7 +159,7 @@ void glRotatef(float angle, float x, float y, float z) {
     gl_matrix_update(c);
 }
 
-void glScalef(float x, float y, float z) {
+void glScalef(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
     float *m;
     m = &c->matrix_stack_ptr[c->matrix_mode]->m[0][0];
@@ -171,7 +171,7 @@ void glScalef(float x, float y, float z) {
     gl_matrix_update(c);
 }
 
-void glTranslatef(float x, float y, float z) {
+void glTranslatef(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
     float *m;
     m = &c->matrix_stack_ptr[c->matrix_mode]->m[0][0];
@@ -184,7 +184,7 @@ void glTranslatef(float x, float y, float z) {
     gl_matrix_update(c);
 }
 
-void glFrustumf(float left, float right, float bottom, float top, float near, float far) {
+void glFrustumf(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far) {
   GLContext *c = gl_get_context();
   float *r;
   M4 m;

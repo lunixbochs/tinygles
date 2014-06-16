@@ -1,24 +1,24 @@
 #include "zgl.h"
 #include "msghandling.h"
 
-void glMaterialf(int mode, int type, float param) {
-    float v[4] = {param, 0, 0, 0};
-    glMaterialfv(mode, type, v);
+void glMaterialf(GLenum face, GLenum pname, GLfloat param) {
+    GLfloat v[4] = {param, 0, 0, 0};
+    glMaterialfv(face, pname, v);
 }
 
-void glMaterialfv(int mode, int type, float *v) {
+void glMaterialfv(GLenum face, GLenum pname, const GLfloat *v) {
     GLContext *c = gl_get_context();
     int i;
     GLMaterial *m;
 
-    if (mode == GL_FRONT_AND_BACK) {
-        glMaterialfv(GL_FRONT, type, v);
-        mode = GL_BACK;
+    if (face == GL_FRONT_AND_BACK) {
+        glMaterialfv(GL_FRONT, pname, v);
+        face = GL_BACK;
     }
-    if (mode == GL_FRONT) m = &c->materials[0];
+    if (face == GL_FRONT) m = &c->materials[0];
     else m = &c->materials[1];
 
-    switch(type) {
+    switch(pname) {
         case GL_EMISSION:
             for (i = 0; i < 4; i++)
                 m->emission.v[i] = v[i];
@@ -50,19 +50,18 @@ void glMaterialfv(int mode, int type, float *v) {
     }
 }
 
-void glColorMaterial(int mode, int type)
-{
+void glColorMaterial(GLenum face, GLenum mode) {
   GLContext *c = gl_get_context();
-  c->current_color_material_mode = mode;
-  c->current_color_material_type = type;
+  c->current_color_material_mode = face;
+  c->current_color_material_type = mode;
 }
 
-void glLightf(int light, int type, float v) {
-    float param[4] = {v, 0, 0, 0};
-    glLightfv(light, type, param);
+void glLightf(GLenum light, GLenum pname, GLfloat param) {
+    float v[4] = {param, 0, 0, 0};
+    glLightfv(light, pname, v);
 }
 
-void glLightfv(int light, int type, float *param) {
+void glLightfv(GLenum light, GLenum pname, const GLfloat *param) {
     GLContext *c = gl_get_context();
     // TODO: 3 components?
     GLLight *l;
@@ -73,7 +72,7 @@ void glLightfv(int light, int type, float *param) {
     V4 v = *(V4 *)param;
     l = &c->lights[light - GL_LIGHT0];
 
-    switch(type) {
+    switch(pname) {
         case GL_AMBIENT:
             l->ambient = v;
             break;
@@ -131,12 +130,12 @@ void glLightfv(int light, int type, float *param) {
     }
 }
 
-void glLightModeli(int pname, int v) {
-    float param[4] = {v, 0, 0, 0};
-    glLightModelfv(pname, param);
+void glLightModeli(GLenum pname, GLint param) {
+    GLfloat v[4] = {pname, 0, 0, 0};
+    glLightModelfv(pname, v);
 }
 
-void glLightModelfv(int pname, float *param) {
+void glLightModelfv(GLenum pname, const GLfloat *param) {
     GLContext *c = gl_get_context();
     V4 v = *(V4 *)param;
 

@@ -1,7 +1,7 @@
 #include "zgl.h"
 #include "msghandling.h"
 
-void glViewport(int x, int y, int width, int height) {
+void glViewport(GLint x, GLint y, GLint width, GLint height) {
     GLContext *c = gl_get_context();
     int xsize, ysize, xmin, ymin, xsize_req, ysize_req;
 
@@ -40,7 +40,7 @@ void glViewport(int x, int y, int width, int height) {
     }
 }
 
-void glopEnableDisable(int code, int v) {
+void glopEnableDisable(GLenum code, int v) {
     GLContext *c = gl_get_context();
     switch(code) {
         case GL_CULL_FACE:
@@ -85,33 +85,33 @@ void glopEnableDisable(int code, int v) {
     }
 }
 
-void glEnable(int cap) {
+void glEnable(GLenum cap) {
     glopEnableDisable(cap, 1);
 }
 
-void glDisable(int cap) {
+void glDisable(GLenum cap) {
     glopEnableDisable(cap, 0);
 }
 
-void glShadeModel(int mode) {
+void glShadeModel(GLenum mode) {
     GLContext *c = gl_get_context();
     assert(mode == GL_FLAT || mode == GL_SMOOTH);
     c->current_shade_model = mode;
 }
 
-void glCullFace(int mode) {
+void glCullFace(GLenum mode) {
     GLContext *c = gl_get_context();
     assert(mode == GL_BACK || mode == GL_FRONT || mode == GL_FRONT_AND_BACK);
     c->current_cull_face = mode;
 }
 
-void glFrontFace(int mode) {
+void glFrontFace(GLenum mode) {
     GLContext *c = gl_get_context();
     assert(mode == GL_CCW || mode == GL_CW);
     c->current_front_face = (mode != GL_CCW);
 }
 
-void glPolygonMode(int face, int mode) {
+void glPolygonMode(GLenum face, GLenum mode) {
     GLContext *c = gl_get_context();
     assert(face == GL_BACK || face == GL_FRONT || face == GL_FRONT_AND_BACK);
     assert(mode == GL_POINT || mode == GL_LINE || mode == GL_FILL);
@@ -132,7 +132,7 @@ void glPolygonMode(int face, int mode) {
     }
 }
 
-void glHint(int target, int mode) {
+void glHint(GLenum target, GLenum mode) {
 #if 0
     int target = p[1].i;
     int mode = p[2].i;
