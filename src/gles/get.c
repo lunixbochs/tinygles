@@ -1,5 +1,10 @@
 #include "zgl.h"
 
+// TODO: do something with this
+const GLubyte *glGetString(GLenum name) {
+    return (GLubyte *)"";
+}
+
 void glGetIntegerv(GLenum pname, GLint *params) {
     GLContext *c = gl_get_context();
 
