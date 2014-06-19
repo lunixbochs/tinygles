@@ -185,25 +185,49 @@ void glTranslatef(GLfloat x, GLfloat y, GLfloat z) {
 }
 
 void glFrustumf(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far) {
-  GLContext *c = gl_get_context();
-  float *r;
-  M4 m;
-  float x, y, A, B, C, D;
+    GLContext *c = gl_get_context();
+    float *r;
+    M4 m;
+    float x, y, A, B, C, D;
 
-  x = (2.0 * near) / (right - left);
-  y = (2.0 * near) / (top - bottom);
-  A = (right + left) / (right - left);
-  B = (top + bottom) / (top - bottom);
-  C = -(far + near) / (far - near);
-  D = -(2.0 * far * near) / (far - near);
+    x = (2.0 * near) / (right - left);
+    y = (2.0 * near) / (top - bottom);
+    A = (right + left) / (right - left);
+    B = (top + bottom) / (top - bottom);
+    C = -(far + near) / (far - near);
+    D = -(2.0 * far * near) / (far - near);
 
-  r = &m.m[0][0];
-  r[0]  = x; r[1]  = 0; r[2]  =  A; r[3]  = 0;
-  r[4]  = 0; r[5]  = y; r[6]  =  B; r[7]  = 0;
-  r[8]  = 0; r[9]  = 0; r[10] =  C; r[11] = D;
-  r[12] = 0; r[13] = 0; r[14] = -1; r[15] = 0;
+    r = &m.m[0][0];
+    r[0]  = x; r[1]  = 0; r[2]  =  A; r[3]  = 0;
+    r[4]  = 0; r[5]  = y; r[6]  =  B; r[7]  = 0;
+    r[8]  = 0; r[9]  = 0; r[10] =  C; r[11] = D;
+    r[12] = 0; r[13] = 0; r[14] = -1; r[15] = 0;
 
-  gl_M4_MulLeft(c->matrix_stack_ptr[c->matrix_mode],&m);
+    gl_M4_MulLeft(c->matrix_stack_ptr[c->matrix_mode], &m);
 
-  gl_matrix_update(c);
+    gl_matrix_update(c);
+}
+
+void glOrthof(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far) {
+    GLContext *c = gl_get_context();
+    float tx, ty, tz;
+    float x, y, z;
+
+    x = 2 / (right - left);
+    y = 2 / (top - bottom);
+    z = -2 / (far - near);
+    tx = -((right + left) / (right - left));
+    ty = -((top + bottom) / (top - bottom));
+    tz = -((far + near) / (far - near));
+
+    float r[] = {
+        x, 0, 0, tx,
+        0, y, 0, ty,
+        0, 0, z, tz,
+        0, 0, 0, 1,
+    };
+
+    gl_M4_MulLeft(c->matrix_stack_ptr[c->matrix_mode], (M4 *)&r);
+
+    gl_matrix_update(c);
 }
