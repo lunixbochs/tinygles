@@ -31,7 +31,8 @@ void glGetIntegerv(GLenum pname, GLint *params) {
             *params = MAX_TEXTURE_STACK_DEPTH;
             break;
         default:
-            gl_fatal_error("glGet: option not implemented");
+            *params = 0;
+            printf("glGet: option not implemented: %x\n", pname);
             break;
     }
 }
@@ -69,7 +70,7 @@ void glGetFloatv(GLenum pname, GLfloat *v) {
         case GL_POINT_SIZE_RANGE:
             v[0] = v[1] = 1.0f;
         default:
-            fprintf(stderr, "warning: unknown pname in glGetFloatv()\n");
+            fprintf(stderr, "warning: unknown pname in glGetFloatv(): %x\n", pname);
             break;
     }
 }
