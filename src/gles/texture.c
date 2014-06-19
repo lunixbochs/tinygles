@@ -164,6 +164,10 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
 }
 
 
+void glTexEnvf(GLenum target, GLenum pname, GLfloat param) {
+    printf("STUB: glTexEnvf(%x, %x, %.2f)\n", target, pname, param);
+}
+
 /* TODO: not all tests are done */
 void glTexEnvi(GLenum target, GLenum pname, GLint param) {
     if (target != GL_TEXTURE_ENV) {
@@ -193,6 +197,6 @@ error:
 
 void glPixelStorei(GLenum pname, GLint param) {
     if (pname != GL_UNPACK_ALIGNMENT || param != 1) {
-        gl_fatal_error("glPixelStore: unsupported option");
+        printf("glPixelStore: unsupported option: %x\n", pname);
     }
 }
