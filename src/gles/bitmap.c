@@ -1,8 +1,6 @@
 #include "zgl.h"
 #include "pixel.h"
 
-GLubyte *raster = NULL;
-
 void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
     GLRasterPos *pos = &c->raster_pos;
@@ -32,7 +30,7 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
     // copy to pixel data
     // TODO: strip blank lines and mirror vertically?
     for (y = 0; y < height; y++) {
-        to = (GLuint *)raster + (GLuint)(pos->x + ((pos->y - y) * zb->xsize));
+        to = (GLuint *)zb->zbuf + (GLuint)(pos->x + ((pos->y - y) * zb->xsize));
         from = bitmap + (y * 2);
         for (x = 0; x < width; x += 8) {
             if (pos->x + x > zb->xsize || pos->y + y > zb->ysize)
@@ -56,7 +54,7 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
     ZBuffer *zb = c->zb;
     GLViewport *viewport = &c->viewport;
 
-    GLubyte *pixels, *from, *to;
+    GLvoid *pixels, *from, *to;
     GLvoid *dst = NULL;
 
     if (! pixel_convert(data, &dst, width, height,
@@ -73,7 +71,7 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
     int screen_width = MIN(viewport->xsize - pos->x, width);
 
     for (int y = ystart; y < height; y++) {
-        to = raster + 4 * (GLuint)(pos->x + ((pos->y - y) * zb->xsize));
+        to = (GLubyte *)zb->zbuf + 4 * (GLuint)(pos->x + ((pos->y - y) * zb->xsize));
         from = pixels + 4 * (xstart + y * width);
         memcpy(to, from, 4 * screen_width);
     }
