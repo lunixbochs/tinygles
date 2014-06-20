@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include "zgl.h"
 
 void glScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
