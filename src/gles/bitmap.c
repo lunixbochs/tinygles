@@ -9,6 +9,10 @@ void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z) {
     pos->z = z;
 }
 
+const uintptr_t pbuf_pos(ZBuffer *zb, int x, int y) {
+    return (uintptr_t)zb->pbuf + (y * zb->linesize) + x * PSZB;
+}
+
 void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
               GLfloat xmove, GLfloat ymove, const GLubyte *bitmap) {
     GLContext *c = gl_get_context();
@@ -23,14 +27,14 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
     }
 
     const GLubyte *from;
-    // TODO: support 16-bit zbuffer
-    GLuint *to;
+    // TODO: support 16-bit zbuffer?
+    GLubyte *to;
     int x, y;
 
     // copy to pixel data
     // TODO: strip blank lines and mirror vertically?
     for (y = 0; y < height; y++) {
-        to = (GLuint *)zb->zbuf + (GLuint)(pos->x + ((pos->y - y) * zb->xsize));
+        to = (GLubyte *)pbuf_pos(zb, pos->x, pos->y - y);
         from = bitmap + (y * 2);
         for (x = 0; x < width; x += 8) {
             if (pos->x + x > zb->xsize || pos->y + y > zb->ysize)
@@ -38,7 +42,8 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
 
             GLubyte b = *from++;
             for (int j = 8; j--; ) {
-                *to++ = (b & (1 << j)) ? 0xFFFFFFFF : 0;
+                *(GLuint *)to = (b & (1 << j)) ? 0xFFFFFFFF : 0;
+                to += PSZB;
             }
         }
     }
@@ -57,8 +62,7 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
     GLvoid *pixels, *from, *to;
     GLvoid *dst = NULL;
 
-    if (! pixel_convert(data, &dst, width, height,
-                        format, type, GL_RGBA, GL_UNSIGNED_BYTE)) {
+    if (! pixel_convert(data, &dst, width, height, format, type, GL_BGRA, GL_UNSIGNED_BYTE)) {
         return;
     }
     pixels = (GLubyte *)dst;
@@ -71,7 +75,7 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
     int screen_width = MIN(viewport->xsize - pos->x, width);
 
     for (int y = ystart; y < height; y++) {
-        to = (GLubyte *)zb->zbuf + 4 * (GLuint)(pos->x + ((pos->y - y) * zb->xsize));
+        to = (GLubyte *)pbuf_pos(zb, pos->x, pos->y - y);
         from = pixels + 4 * (xstart + y * width);
         memcpy(to, from, 4 * screen_width);
     }
