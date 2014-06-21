@@ -6,6 +6,7 @@ void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z) {
     GLRasterPos *pos = &c->raster_pos;
     pos->x = x;
     pos->y = y;
+    // TODO: update the zbuffer?
     pos->z = z;
 }
 
@@ -27,14 +28,14 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
     }
 
     const GLubyte *from;
-    // TODO: support 16-bit zbuffer?
-    GLubyte *to;
+    // TODO: support 16-bit pixel size?
+    uintptr_t to;
     int x, y;
 
     // copy to pixel data
     // TODO: strip blank lines and mirror vertically?
     for (y = 0; y < height; y++) {
-        to = (GLubyte *)pbuf_pos(zb, pos->x, pos->y - y);
+        to = pbuf_pos(zb, pos->x, pos->y - y);
         from = bitmap + (y * 2);
         for (x = 0; x < width; x += 8) {
             if (pos->x + x > zb->xsize || pos->y + y > zb->ysize)
@@ -42,7 +43,12 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
 
             GLubyte b = *from++;
             for (int j = 8; j--; ) {
-                *(GLuint *)to = (b & (1 << j)) ? 0xFFFFFFFF : 0;
+                GLuint value = (b & (1 << j)) ? 0xFFFFFFFF : 0;
+#if TGL_FEATURE_RENDER_BITS == 32
+                *(GLuint *)to = value;
+#elif TGL_FEATURE_RENDER_BITS == 16
+                *(GLushort *)to = value;
+#endif
                 to += PSZB;
             }
         }
@@ -62,7 +68,15 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
     GLvoid *pixels, *from, *to;
     GLvoid *dst = NULL;
 
-    if (! pixel_convert(data, &dst, width, height, format, type, GL_BGRA, GL_UNSIGNED_BYTE)) {
+    // TODO: convert+blit directly into the pbuffer to save a copy?
+
+    if (! pixel_convert(data, &dst, width, height, format, type, GL_BGRA,
+#if TGL_FEATURE_RENDER_BITS == 32
+                GL_UNSIGNED_BYTE
+#elif TGL_FEATURE_RENDER_BITS == 16
+                GL_UNSIGNED_SHORT
+#endif
+            )) {
         return;
     }
     pixels = (GLubyte *)dst;
