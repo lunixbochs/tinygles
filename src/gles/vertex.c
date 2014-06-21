@@ -191,7 +191,7 @@ void glVertex4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w) {
         c->vertex_max <<= 1;	/* just double size */
         newarray = malloc(sizeof(GLVertex) * c->vertex_max);
         if (!newarray) {
-            gl_fatal_error("unable to allocate GLVertex array.\n");
+            fprintf(stderr, "unable to allocate GLVertex array.\n");
         }
         memcpy(newarray, c->vertex, n * sizeof(GLVertex));
         free(c->vertex);
@@ -305,7 +305,7 @@ void glVertex4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w) {
         case GL_POLYGON:
             break;
         default:
-            gl_fatal_error("glBegin: type %x not handled\n", c->begin_type);
+            fprintf(stderr, "glBegin: type %x not handled\n", c->begin_type);
     }
 
     c->vertex_n = n;

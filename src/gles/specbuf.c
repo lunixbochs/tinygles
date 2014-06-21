@@ -30,7 +30,7 @@ GLSpecBuf * specbuf_get_buffer(GLContext *c, const int shininess_i, const float 
     if (oldest == NULL || c->specbuf_num_buffers < MAX_SPECULAR_BUFFERS) {
         /* create new buffer */
         GLSpecBuf *buf = malloc(sizeof(GLSpecBuf));
-        if (!buf) gl_fatal_error("could not allocate specular buffer");
+        if (!buf) fprintf(stderr, "could not allocate specular buffer");
         c->specbuf_num_buffers++;
         buf->next = c->specbuf_first;
         c->specbuf_first = buf;

@@ -121,7 +121,7 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
     if (!(target == GL_TEXTURE_2D && level == 0 && internalFormat == GL_RGB &&
             border == 0 && format == GL_RGB &&
             type == GL_UNSIGNED_BYTE)) {
-        gl_fatal_error("glTexImage2D: combination of parameters not handled");
+        fprintf(stderr, "glTexImage2D: combination of parameters not handled");
     }
 
     do_free = 0;
@@ -172,7 +172,7 @@ void glTexEnvf(GLenum target, GLenum pname, GLfloat param) {
 void glTexEnvi(GLenum target, GLenum pname, GLint param) {
     if (target != GL_TEXTURE_ENV) {
 error:
-        gl_fatal_error("glTexEnvi: unsupported option");
+        fprintf(stderr, "glTexEnvi: unsupported option\n");
     }
 
     if (pname != GL_TEXTURE_ENV_MODE) goto error;
@@ -183,14 +183,14 @@ error:
 /* TODO: not all tests are done */
 void glTexParameteri(GLenum target, GLenum pname, GLint param) {
     if (target != GL_TEXTURE_2D) {
-error:
-        gl_fatal_error("glTexParameter: unsupported option");
+        fprintf(stderr, "glTexParameter: unsupported option\n");
     }
 
     switch(pname) {
         case GL_TEXTURE_WRAP_S:
         case GL_TEXTURE_WRAP_T:
-            if (param != GL_REPEAT) goto error;
+            if (param != GL_REPEAT)
+                fprintf(stderr, "glTexParameter: unsupported option\n");
             break;
     }
 }

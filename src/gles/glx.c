@@ -59,7 +59,7 @@ GLXContext glXCreateContext(Display *dpy, XVisualInfo *vis, GLXContext shareList
     TinyGLXContext *ctx;
 
     if (shareList != NULL) {
-        gl_fatal_error("No sharing available in TinyGL");
+        fprintf(stderr, "No sharing available in TinyGL");
     }
     ctx = malloc(sizeof(TinyGLXContext));
     ctx->gl_context = NULL;
