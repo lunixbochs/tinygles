@@ -197,6 +197,6 @@ error:
 
 void glPixelStorei(GLenum pname, GLint param) {
     if (pname != GL_UNPACK_ALIGNMENT || param != 1) {
-        printf("glPixelStore: unsupported option: %x\n", pname);
+        fprintf(stderr, "glPixelStore: unsupported option: %x\n", pname);
     }
 }

@@ -3,58 +3,58 @@
 #include "zgl.h"
 
 void glScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
-    printf("STUB: glScissor()\n");
+    fprintf(stderr, "STUB: glScissor()\n");
 }
 
 void glAlphaFunc(GLenum func, GLclampf ref) {
-    printf("STUB: glAlphaFunc()\n");
+    fprintf(stderr, "STUB: glAlphaFunc()\n");
 }
 
 void glBlendFunc(GLenum sfactor, GLenum dfactor) {
-    printf("STUB: glAlphaFunc()\n");
+    fprintf(stderr, "STUB: glAlphaFunc()\n");
 }
 
 void glLogicOp(GLenum opcode) {
-    printf("STUB: glLogicOp()\n");
+    fprintf(stderr, "STUB: glLogicOp()\n");
 }
 
 void glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha) {
-    printf("STUB: glColorMask()\n");
+    fprintf(stderr, "STUB: glColorMask()\n");
 }
 
 void glDepthFunc(GLenum func) {
-    printf("STUB: glDepthFunc()\n");
+    fprintf(stderr, "STUB: glDepthFunc()\n");
 }
 
 void glClearDepthf(GLclampf depth) {
-    printf("STUB: glClearDepthf()\n");
+    fprintf(stderr, "STUB: glClearDepthf()\n");
 }
 
 void glDepthMask(GLboolean flag) {
-    printf("STUB: glDepthMask()\n");
+    fprintf(stderr, "STUB: glDepthMask()\n");
 }
 
 void glFogfv(GLenum pname, const GLfloat *params) {
-    printf("STUB: glFogfv()\n");
+    fprintf(stderr, "STUB: glFogfv()\n");
 }
 
 void glFogf(GLenum pname, GLfloat param) {
-    printf("STUB: glFogf()\n");
+    fprintf(stderr, "STUB: glFogf()\n");
 }
 
 void glLineWidth(GLfloat width) {
-    printf("STUB: glLineWidth\n");
+    fprintf(stderr, "STUB: glLineWidth\n");
 }
 
 void glPointSize(GLfloat size) {
-    printf("STUB: glPointSize\n");
+    fprintf(stderr, "STUB: glPointSize\n");
 }
 
 void glFinish() {
-    printf("STUB: glFinish()\n");
+    fprintf(stderr, "STUB: glFinish()\n");
 }
 
 GLboolean glIsEnabled(GLenum cap) {
-    printf("STUB: glIsEnabled(%x)\n", cap);
+    fprintf(stderr, "STUB: glIsEnabled(%x)\n", cap);
     return false;
 }

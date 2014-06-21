@@ -32,7 +32,7 @@ void glGetIntegerv(GLenum pname, GLint *params) {
             break;
         default:
             *params = 0;
-            printf("glGet: option not implemented: %x\n", pname);
+            fprintf(stderr, "glGet: option not implemented: %x\n", pname);
             break;
     }
 }
