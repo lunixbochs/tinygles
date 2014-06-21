@@ -142,12 +142,7 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
     im->xsize = width;
     im->ysize = height;
     if (im->pixmap != NULL) free(im->pixmap);
-#if TGL_FEATURE_RENDER_BITS == 24
-    im->pixmap = malloc(width * height * 3);
-    if (im->pixmap) {
-        memcpy(im->pixmap, pixels1, width * height * 3);
-    }
-#elif TGL_FEATURE_RENDER_BITS == 32
+#if TGL_FEATURE_RENDER_BITS == 32
     im->pixmap = malloc(width * height * 4);
     if (im->pixmap) {
         gl_convertRGB_to_8A8R8G8B(im->pixmap, pixels1, width, height);

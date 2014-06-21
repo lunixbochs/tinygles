@@ -286,58 +286,6 @@ void ZB_copyFrameBuffer(ZBuffer * zb, void *buf, int linesize) {
 
 #endif /* TGL_FEATURE_RENDER_BITS == 16 */
 
-#if TGL_FEATURE_RENDER_BITS == 24
-
-#define RGB24_TO_RGB16(r, g, b) \
-  ((((r) >> 3) << 11) | (((g) >> 2) << 5) | ((b) >> 3))
-
-/* XXX: not optimized */
-static void ZB_copyFrameBuffer5R6G5B(ZBuffer * zb,
-                                     void *buf, int linesize)
-{
-    PIXEL *q;
-    unsigned short *p, *p1;
-    int y, n;
-
-    q = zb->pbuf;
-    p1 = (unsigned short *) buf;
-
-    for (y = 0; y < zb->ysize; y++) {
-	p = p1;
-	n = zb->xsize >> 2;
-	do {
-            p[0] = RGB24_TO_RGB16(q[0], q[1], q[2]);
-            p[1] = RGB24_TO_RGB16(q[3], q[4], q[5]);
-            p[2] = RGB24_TO_RGB16(q[6], q[7], q[8]);
-            p[3] = RGB24_TO_RGB16(q[9], q[10], q[11]);
-	    q = (PIXEL *)((char *)q + 4 * PSZB);
-	    p += 4;
-	} while (--n > 0);
-	p1 = (unsigned short *)((char *)p1 + linesize);
-    }
-}
-
-void ZB_copyFrameBuffer(ZBuffer * zb, void *buf,
-			int linesize)
-{
-    switch (zb->mode) {
-#ifdef TGL_FEATURE_16_BITS
-    case ZB_MODE_5R6G5B:
-	ZB_copyFrameBuffer5R6G5B(zb, buf, linesize);
-	break;
-#endif
-#ifdef TGL_FEATURE_24_BITS
-    case ZB_MODE_RGB24:
-	ZB_copyBuffer(zb, buf, linesize);
-	break;
-#endif
-    default:
-	assert(0);
-    }
-}
-
-#endif /* TGL_FEATURE_RENDER_BITS == 24 */
-
 #if TGL_FEATURE_RENDER_BITS == 32
 
 #define RGB32_TO_RGB16(v) \
@@ -484,8 +432,6 @@ void ZB_clear(ZBuffer * zb, int clear_z, int z, int clear_color, int r, int g, i
 #elif TGL_FEATURE_RENDER_BITS == 32
             color = RGB_TO_PIXEL(r, g, b);
             memset_long(pp, color, zb->xsize);
-#elif TGL_FEATURE_RENDER_BITS == 24
-            memset_RGB24(pp, r >> 8, g >> 8, b >> 8, zb->xsize);
 #else
 #error TODO
 #endif

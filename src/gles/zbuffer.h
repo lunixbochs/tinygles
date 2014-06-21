@@ -30,17 +30,7 @@
 #define ZB_MODE_RGB24   4  /* 24 bit rgb mode */
 #define ZB_NB_COLORS    225 /* number of colors for 8 bit display */
 
-#if TGL_FEATURE_RENDER_BITS == 15
-
-#define RGB_TO_PIXEL(r, g, b) \
-  ((((r) >> 1) & 0x7c00) | (((g) >> 6) & 0x03e0) | ((b) >> 11))
-typedef unsigned short PIXEL;
-/* bytes per pixel */
-#define PSZB 2 
-/* bits per pixel = (1 << PSZH) */
-#define PSZSH 4 
-
-#elif TGL_FEATURE_RENDER_BITS == 16
+#if TGL_FEATURE_RENDER_BITS == 16
 
 /* 16 bit mode */
 #define RGB_TO_PIXEL(r, g, b) \
@@ -48,14 +38,6 @@ typedef unsigned short PIXEL;
 typedef unsigned short PIXEL;
 #define PSZB 2 
 #define PSZSH 4 
-
-#elif TGL_FEATURE_RENDER_BITS == 24
-
-#define RGB_TO_PIXEL(r, g, b) \
-  ((((r) << 8) & 0xff0000) | ((g) & 0xff00) | ((b) >> 8))
-typedef unsigned char PIXEL;
-#define PSZB 3
-#define PSZSH 5
 
 #elif TGL_FEATURE_RENDER_BITS == 32
 
