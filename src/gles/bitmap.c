@@ -74,7 +74,7 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
 #if TGL_FEATURE_RENDER_BITS == 32
                 GL_UNSIGNED_BYTE
 #elif TGL_FEATURE_RENDER_BITS == 16
-                GL_UNSIGNED_SHORT
+                GL_UNSIGNED_SHORT_5_6_5
 #endif
             )) {
         return;
@@ -90,8 +90,8 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
 
     for (int y = ystart; y < height; y++) {
         to = (GLubyte *)pbuf_pos(zb, pos->x, pos->y - y);
-        from = pixels + 4 * (xstart + y * width);
-        memcpy(to, from, 4 * screen_width);
+        from = pixels + PSZB * (xstart + y * width);
+        memcpy(to, from, PSZB * screen_width);
     }
     if (pixels != data)
         free(pixels);
