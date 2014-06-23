@@ -13,6 +13,10 @@
 #include "zmath.h"
 #include "zfeatures.h"
 
+#ifdef __ARM_NEON__
+#include "arm_neon.h"
+#endif
+
 #define DEBUG
 /* #define NDEBUG */
 

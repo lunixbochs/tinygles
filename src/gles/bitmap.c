@@ -1,10 +1,6 @@
 #include "zgl.h"
 #include "pixel.h"
 
-#ifdef __ARM_NEON__
-#include <arm_neon.h>
-#endif
-
 void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
     GLRasterPos *pos = &c->raster_pos;
