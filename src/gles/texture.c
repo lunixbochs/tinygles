@@ -165,15 +165,11 @@ void glTexEnvf(GLenum target, GLenum pname, GLfloat param) {
 
 /* TODO: not all tests are done */
 void glTexEnvi(GLenum target, GLenum pname, GLint param) {
-    if (target != GL_TEXTURE_ENV) {
-error:
+    if (target != GL_TEXTURE_ENV || pname != GL_TEXTURE_ENV_MODE || param != GL_DECAL) {
         fprintf(stderr, "glTexEnvi: unsupported option\n");
     }
-
-    if (pname != GL_TEXTURE_ENV_MODE) goto error;
-
-    if (param != GL_DECAL) goto error;
 }
+
 
 /* TODO: not all tests are done */
 void glTexParameteri(GLenum target, GLenum pname, GLint param) {
