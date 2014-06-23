@@ -292,17 +292,64 @@ void ZB_copyFrameBuffer(ZBuffer * zb, void *buf, int linesize) {
   (((v >> 8) & 0xf800) | (((v) >> 5) & 0x07e0) | (((v) & 0xff) >> 3))
 
 /* XXX: not optimized */
-static void ZB_copyFrameBuffer5R6G5B(ZBuffer * zb, void *buf, int linesize) {
-    PIXEL *q;
-    unsigned short *p, *p1;
-    int y, n;
+void ZB_copyFrameBuffer5R6G5B(ZBuffer *zb, void *buf, int linesize) {
+    int n = zb->xsize >> 2;
+#ifdef __ARM_NEON__
+    asm volatile (
+        "mov r0, #0xf800\n"
+        "vdup.32 q4, r0\n"
+        "mov r0, #0x07e0\n"
+        "vdup.32 q5, r0\n"
+        "mov r0, #0x1f\n"
+        "vdup.32 q6, r0\n"
 
-    q = zb->pbuf;
-    p1 = (unsigned short *) buf;
+        "mov r0, #0\n"
+        ".outer:\n"
+            "pld [%1]\n"
+            "mov r1, %3\n"
+            "mov r2, %0\n"
 
-    for (y = 0; y < zb->ysize; y++) {
+            ".inner:\n"
+                "vld1.32 {d0, d1}, [%1]\n"
+                "vld1.32 {d2, d3}, [%1]\n"
+                "vld1.32 {d4, d5}, [%1]\n"
+
+                "vshr.u32 q0, q0, #8\n"
+                "vand.u32 q0, q4\n"
+
+                "vshr.u32 q1, q1, #5\n"
+                "vand.u32 q1, q5\n"
+
+                "vshr.u32 q2, q2, #3\n"
+                "vand.u32 q2, q6\n"
+
+                "vorr q0, q0, q1\n"
+                "vorr q0, q0, q2\n"
+
+                "vmovn.u32 d0, q0\n"
+                "vst1.32 d0, [r2]\n"
+
+                "add %1, %1, #16\n"
+                "add r2, r2, #8\n"
+
+                "sub r1, r1, #1\n"
+                "cmp r1, #0\n"
+                "bgt .inner\n"
+
+            "add %0, %0, %4\n"
+            "add r0, r0, #1\n"
+            "cmp r0, %2\n"
+            "blt .outer\n"
+
+        :
+        : "r"(buf), "r"(zb->pbuf), "r"(zb->ysize), "r"(n), "r"(linesize)
+        : "r0", "r1", "r2", "q0", "q1", "q2", "q3", "q4", "q5", "q6"
+    );
+#else
+    PIXEL *q = zb->pbuf;
+    unsigned short *p, *p1 = (unsigned short *) buf;
+    for (int y = 0; y < zb->ysize; y++) {
         p = p1;
-        n = zb->xsize >> 2;
         do {
             p[0] = RGB32_TO_RGB16(q[0]);
             p[1] = RGB32_TO_RGB16(q[1]);
@@ -313,6 +360,7 @@ static void ZB_copyFrameBuffer5R6G5B(ZBuffer * zb, void *buf, int linesize) {
         } while (--n > 0);
         p1 = (unsigned short *)((char *)p1 + linesize);
     }
+#endif
 }
 
 void ZB_copyFrameBuffer(ZBuffer * zb, void *buf, int linesize) {
