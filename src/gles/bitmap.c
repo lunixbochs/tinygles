@@ -1,6 +1,10 @@
 #include "zgl.h"
 #include "pixel.h"
 
+#ifdef __ARM_NEON__
+#include <arm_neon.h>
+#endif
+
 void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
     GLRasterPos *pos = &c->raster_pos;
@@ -32,6 +36,13 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
     uintptr_t to;
     int x, y;
 
+#ifdef __ARM_NEON__
+    uint32_t mask1s[] = {128, 64, 32, 16};
+    uint32_t mask2s[] = {8, 4, 2, 1};
+    uint32x4_t mask1 = vld1q_u32(mask1s);
+    uint32x4_t mask2 = vld1q_u32(mask2s);
+#endif
+
     // copy to pixel data
     // TODO: strip blank lines and mirror vertically?
     for (y = 0; y < height; y++) {
@@ -41,7 +52,19 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
             if (pos->x + x > zb->xsize || pos->y + y > zb->ysize)
                 continue;
 
-            GLubyte b = *from++;
+            GLuint b = *from++;
+#ifdef __ARM_NEON__
+            uint32x4_t b1, b2;
+            b1 = vld1q_dup_u32(&b);
+            b1 = vtstq_u32(b1, mask1);
+            vst1q_u32((uint32_t *)to, b1);
+            to += (PSZB * 4);
+
+            b2 = vld1q_dup_u32(&b);
+            b2 = vtstq_u32(b2, mask2);
+            vst1q_u32((uint32_t *)to, b2);
+            to += (PSZB * 4);
+#else
             for (int j = 8; j--; ) {
                 GLuint value = (b & (1 << j)) ? 0xFFFFFFFF : 0;
 #if TGL_FEATURE_RENDER_BITS == 32
@@ -51,6 +74,7 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
 #endif
                 to += PSZB;
             }
+#endif // __ARM_NEON__
         }
     }
 
