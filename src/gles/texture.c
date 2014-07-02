@@ -110,6 +110,14 @@ void glBindTexture(GLenum target, GLuint texture) {
     c->current_texture = t;
 }
 
+
+GLboolean glIsTexture(GLuint texture) {
+    GLContext *c = gl_get_context();
+    GLTexture *t = find_texture(c, texture);
+    return t != NULL;
+}
+
+
 void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
                   GLsizei width, GLsizei height, GLint border,
                   GLenum format, GLenum type, const GLvoid *pixels) {
