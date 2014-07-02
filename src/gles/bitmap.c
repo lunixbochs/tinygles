@@ -49,7 +49,7 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
                 continue;
 
             GLuint b = *from++;
-#ifdef __ARM_NEON__
+#if 0 // __ARM_NEON__
             uint32x4_t b1, b2;
             b1 = vld1q_dup_u32(&b);
             b1 = vtstq_u32(b1, mask1);

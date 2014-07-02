@@ -293,40 +293,72 @@ void ZB_copyFrameBuffer(ZBuffer * zb, void *buf, int linesize) {
 
 /* XXX: not optimized */
 void ZB_copyFrameBuffer5R6G5B(ZBuffer *zb, void *buf, int linesize) {
-    int n = zb->xsize >> 2;
 #ifdef __ARM_NEON__
     asm volatile (
-        "mov r0, #0xf800\n"
-        "vdup.32 q4, r0\n"
-        "mov r0, #0x07e0\n"
-        "vdup.32 q5, r0\n"
-        "mov r0, #0x1f\n"
-        "vdup.32 q6, r0\n"
-
         "mov r0, #0\n"
         ".outer:\n"
-            "pld [%1]\n"
             "mov r1, %3\n"
             "mov r2, %0\n"
 
             ".inner:\n"
+                "pld [%1]\n"
+                "vld4.8 {d0, d1, d2, d3}, [%1]\n"
+
+                "vshll.u8 q3, d1, #8\n"
+                "vshll.u8 q5, d0, #8\n"
+                "vshll.u8 q4, d2, #8\n"
+
+                "vsri.u16 q5, q3, #5\n"
+                "vsri.u16 q5, q4, #11\n"
+
+                "vst1.32 {d10, d11}, [r2]\n"
+
+                "add %1, %1, #32\n"
+                "add r2, r2, #16\n"
+
+                "sub r1, r1, #2\n"
+                "cmp r1, #0\n"
+                "bgt .inner\n"
+
+            "add %0, %0, %4\n"
+            "add r0, r0, #1\n"
+            "cmp r0, %2\n"
+            "blt .outer\n"
+
+        :
+        : "r"(buf), "r"(zb->pbuf), "r"(zb->ysize), "r"(zb->xsize >> 2), "r"(linesize)
+        : "r0", "r1", "r2", "q0", "q1", "q2", "q3", "q4", "q5"
+    );
+    /*
+    asm volatile (
+        "mov r0, #0xf800\n"
+        "vdup.32 d6, r0\n"
+        "mov r0, #0x07e0\n"
+        "vdup.32 d7, r0\n"
+        "mov r0, #0x1f\n"
+        "vdup.32 d8, r0\n"
+
+        "mov r0, #0\n"
+        ".outer:\n"
+            "mov r1, %3\n"
+            "mov r2, %0\n"
+
+            ".inner:\n"
+                "pld [%1]\n"
                 "vld1.32 {d0, d1}, [%1]\n"
                 "vld1.32 {d2, d3}, [%1]\n"
                 "vld1.32 {d4, d5}, [%1]\n"
 
-                "vshr.u32 q0, q0, #8\n"
-                "vand.u32 q0, q4\n"
+                "vshrn.u32 d0, q0, #8\n"
+                "vshrn.u32 d1, q1, #5\n"
+                "vshrn.u32 d2, q2, #3\n"
 
-                "vshr.u32 q1, q1, #5\n"
-                "vand.u32 q1, q5\n"
+                "vand.u16 d0, d6\n"
+                "vand.u16 d1, d7\n"
+                "vand.u16 d2, d8\n"
+                "vorr d0, d0, d1\n"
+                "vorr d0, d0, d2\n"
 
-                "vshr.u32 q2, q2, #3\n"
-                "vand.u32 q2, q6\n"
-
-                "vorr q0, q0, q1\n"
-                "vorr q0, q0, q2\n"
-
-                "vmovn.u32 d0, q0\n"
                 "vst1.32 d0, [r2]\n"
 
                 "add %1, %1, #16\n"
@@ -342,13 +374,15 @@ void ZB_copyFrameBuffer5R6G5B(ZBuffer *zb, void *buf, int linesize) {
             "blt .outer\n"
 
         :
-        : "r"(buf), "r"(zb->pbuf), "r"(zb->ysize), "r"(n), "r"(linesize)
+        : "r"(buf), "r"(zb->pbuf), "r"(zb->ysize), "r"(zb->xsize >> 2), "r"(linesize)
         : "r0", "r1", "r2", "q0", "q1", "q2", "q3", "q4", "q5", "q6"
     );
+    */
 #else
     PIXEL *q = zb->pbuf;
     unsigned short *p, *p1 = (unsigned short *) buf;
     for (int y = 0; y < zb->ysize; y++) {
+        int n = zb->xsize >> 2;
         p = p1;
         do {
             p[0] = RGB32_TO_RGB16(q[0]);

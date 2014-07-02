@@ -129,6 +129,97 @@ bool pixel_convert(const GLvoid *src, GLvoid **dst,
                    GLuint width, GLuint height,
                    GLenum src_format, GLenum src_type,
                    GLenum dst_format, GLenum dst_type) {
+    if (src_format == GL_RGBA && dst_format == GL_BGRA && src_type == GL_UNSIGNED_BYTE && dst_type == GL_UNSIGNED_SHORT_5_6_5) {
+        int size = (width * height);
+        GLushort *out = *dst = malloc(size * 2);
+        const GLubyte *pixels = (const GLubyte *)src;
+        for (int i = 0; i < size; i++) {
+            char r, g, b;
+            r = pixels[0] * 0x1f / 0xff;
+            g = pixels[1] * 0x3f / 0xff;
+            b = pixels[2] * 0x1f / 0xff;
+
+            *out++ = ((r & 0x1f) << 11) | ((g & 0x3f) << 5) | (b & 0x1f);
+            pixels += 4;
+        }
+        return true;
+    }
+    if (src_format == GL_RGBA && dst_format == GL_BGRA && src_type == dst_type && src_type == GL_UNSIGNED_BYTE) {
+        int size = (width * height);
+        GLubyte *out = *dst = malloc(size * 4);
+#ifdef __ARM_NEON__
+        asm volatile (
+            "mov r0, #0\n"
+            ".loop:\n"
+                "pld [%0]\n"
+                "vld4.8 {d0, d1, d2, d3}, [%0]\n"
+                "vswp d0, d2\n"
+                "vst4.8 {d0, d1, d2, d3}, [%1]\n"
+
+                "add %0, %0, #32\n"
+                "add %1, %1, #32\n"
+
+                "add r0, r0, #8\n"
+                "cmp r0, %2\n"
+                "blt .loop\n"
+            :
+            : "r"(src), "r"(out), "r"(width * height)
+            : "r0", "d0", "d1", "d2", "d3"
+        );
+        /*
+        asm volatile (
+            "pld [%0]\n"
+
+            "mov r0, #0xFF000000\n"
+            "vdup.32 q3, r0\n"
+            "mov r0, #0x0000FF00\n"
+            "vdup.32 q4, r0\n"
+            "lsl r0, r0, #8\n"
+            "orr r0, r0, #0xFF\n"
+            "vdup.32 q5, r0\n"
+
+            "mov r0, %2\n"
+            ".loop:\n"
+                "vld1.32 {d0, d1}, [%0]\n"
+                "vld1.32 {d2, d3}, [%0]\n"
+                "vld1.32 {d4, d5}, [%0]\n"
+
+                "vand.u32 q0, q3\n"
+                "vand.u32 q1, q4\n"
+                "vand.u32 q2, q5\n"
+
+                "vshr.u32 q0, q0, #16\n"
+                "vshl.u32 q1, q1, #16\n"
+
+                "vorr q0, q0, q1\n"
+                "vorr q0, q0, q2\n"
+
+                "vst1.32 {d0, d1}, [%1]\n"
+
+                "add %0, %0, #4\n"
+                "add %1, %1, #4\n"
+
+                "sub r0, r0, #1\n"
+                "cmp r0, #0\n"
+                "bgt .loop\n"
+            :
+            : "r"(src), "r"(out), "r"(width * height - 2)
+            : "r0", "d0", "d1", "d2", "d3"
+        );
+        */
+#else
+        const GLubyte *pixels = (const GLubyte *)src;
+        for (int i = 0; i < size; i++) {
+            out[0] = pixels[2];
+            out[1] = pixels[1];
+            out[2] = pixels[0];
+            out[3] = pixels[3];
+            out += 4;
+            pixels += 4;
+        }
+#endif
+        return true;
+    }
     const colorlayout_t *src_color, *dst_color;
     GLuint pixels = width * height;
     GLuint dst_size = pixels * gl_pixel_sizeof(dst_format, dst_type);
