@@ -41,8 +41,3 @@ void glPointSize(GLfloat size) {
 void glFinish() {
     fprintf(stderr, "STUB: glFinish()\n");
 }
-
-GLboolean glIsEnabled(GLenum cap) {
-    fprintf(stderr, "STUB: glIsEnabled(%x)\n", cap);
-    return false;
-}
