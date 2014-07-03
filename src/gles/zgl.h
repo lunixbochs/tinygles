@@ -17,9 +17,6 @@
 #include "arm_neon.h"
 #endif
 
-#define DEBUG
-/* #define NDEBUG */
-
 #ifndef MIN
 #define MIN(a, b) (((a) < (b) ? (a) : (b)))
 #endif
@@ -318,18 +315,6 @@ void glInit(void *zbuffer1);
 
 /* specular buffer "api" */
 GLSpecBuf *specbuf_get_buffer(GLContext *c, const int shininess_i, const float shininess);
-
-
-#ifdef DEBUG
-
-#define dprintf(format, args...) \
-  fprintf(stderr, "In '%s': " format "\n", __FUNCTION__, ##args);
-
-#else
-
-#define dprintf(format, args...)
-
-#endif
 
 /* this clip epsilon is needed to avoid some rounding errors after
    several clipping stages */
