@@ -1,5 +1,4 @@
 #include "zgl.h"
-#include "msghandling.h"
 
 void glViewport(GLint x, GLint y, GLint width, GLint height) {
     GLContext *c = gl_get_context();

@@ -6,18 +6,6 @@ void glScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
     fprintf(stderr, "STUB: glScissor()\n");
 }
 
-void glAlphaFunc(GLenum func, GLclampf ref) {
-    fprintf(stderr, "STUB: glAlphaFunc()\n");
-}
-
-void glBlendFunc(GLenum sfactor, GLenum dfactor) {
-    fprintf(stderr, "STUB: glAlphaFunc()\n");
-}
-
-void glLogicOp(GLenum opcode) {
-    fprintf(stderr, "STUB: glLogicOp()\n");
-}
-
 void glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha) {
     fprintf(stderr, "STUB: glColorMask()\n");
 }

@@ -1,5 +1,4 @@
 #include "zgl.h"
-#include "msghandling.h"
 
 void glMaterialf(GLenum face, GLenum pname, GLfloat param) {
     GLfloat v[4] = {param, 0, 0, 0};
@@ -150,8 +149,7 @@ void glLightModelfv(GLenum pname, const GLfloat *param) {
             c->light_model_two_side = (int)v.v[0];
             break;
         default:
-            tgl_warning("glLightModel: illegal pname: 0x%x\n", pname);
-            //assert(0);
+            fprintf(stderr, "glLightModel: illegal pname: 0x%x\n", pname);
             break;
     }
 }
