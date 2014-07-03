@@ -130,8 +130,7 @@ static void ZB_copyBuffer(ZBuffer * zb, void *buf, int linesize) {
 
 #ifdef TGL_FEATURE_32_BITS
 
-#define RGB16_TO_RGB32(p0, p1, v)\
-{\
+#define RGB16_TO_RGB32(p0, p1, v) {
     unsigned int g, b, gb;\
     g = (v & 0x07E007E0) << 5;\
     b = (v & 0x001F001F) << 3;\
@@ -191,8 +190,7 @@ static void ZB_copyFrameBufferRGB32(ZBuffer * zb, void *buf, int linesize) {
 
 #if BYTE_ORDER == BIG_ENDIAN
 
-#define RGB16_TO_RGB24(p0, p1, p2, v1, v2)\
-{\
+#define RGB16_TO_RGB24(p0, p1, p2, v1, v2) {\
     unsigned int r1, g1, b1, gb1, g2, b2, gb2;\
     v1 = (v1 << 16) | (v1 >> 16);\
     v2 = (v2 << 16) | (v2 >> 16);\
@@ -210,8 +208,7 @@ static void ZB_copyFrameBufferRGB32(ZBuffer * zb, void *buf, int linesize) {
 
 #else
 
-#define RGB16_TO_RGB24(p0, p1, p2, v1, v2)\
-{\
+#define RGB16_TO_RGB24(p0, p1, p2, v1, v2) {\
     unsigned int r1, g1, b1, gb1, g2, b2, gb2;\
     r1 = (v1 & 0xF800F800);\
     g1 = (v1 & 0x07E007E0) << 5;\

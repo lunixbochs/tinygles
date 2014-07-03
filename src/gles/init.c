@@ -168,9 +168,8 @@ void glInit(void *zbuffer1) {
     c->depth_test = 0;
 }
 
-void glClose(void)
-{
-  GLContext *c=gl_get_context();
-  endSharedState(c);
-  free(c);
+void glClose() {
+    GLContext *c = gl_get_context();
+    endSharedState(c);
+    free(c);
 }

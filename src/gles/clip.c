@@ -198,7 +198,6 @@ float (*clip_proc[6])(V4 *, V4 *, V4 *)=  {
 };
 
 static inline void updateTmp(GLContext *c, GLVertex *q, GLVertex *p0, GLVertex *p1, float t) {
-
     if (c->current_shade_model == GL_SMOOTH) {
         q->color.v[0] = p0->color.v[0] + (p1->color.v[0] - p0->color.v[0]) * t;
         q->color.v[1] = p0->color.v[1] + (p1->color.v[1] - p0->color.v[1]) * t;
@@ -221,8 +220,7 @@ static inline void updateTmp(GLContext *c, GLVertex *q, GLVertex *p0, GLVertex *
 
 static void gl_draw_triangle_clip(GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2, int clip_bit);
 
-void gl_draw_triangle(GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2)
-{
+void gl_draw_triangle(GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2) {
     int co, c_and, cc[3], front;
     float norm;
 
