@@ -297,6 +297,21 @@ typedef struct GLContext {
     /* depth test */
     int depth_test;
 
+    struct {
+        int dfactor;
+        int sfactor;
+        int enabled;
+    } blend;
+
+    struct {
+        int func;
+        int ref;
+    } alpha;
+
+    struct {
+        int op;
+    } logic;
+
     // TODO: glPushAttrib
     GLRasterPos raster_pos;
 } GLContext;

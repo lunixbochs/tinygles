@@ -18,11 +18,12 @@ static void gl_enable_disable_light(GLContext *c, int light, int v) {
 static int *gl_bit_pointer(GLContext *c, GLenum cap) {
 #define map(magic, attr) case magic: return &attr
     switch (cap) {
-        map(GL_CULL_FACE, c->cull_face_enabled);
-        map(GL_LIGHTING, c->light.enabled);
+        map(GL_BLEND, c->blend.enabled);
         map(GL_COLOR_MATERIAL, c->material.color.enabled);
-        map(GL_TEXTURE_2D, c->texture.enabled_2d);
+        map(GL_CULL_FACE, c->cull_face_enabled);
         map(GL_DEPTH_TEST, c->depth_test);
+        map(GL_LIGHTING, c->light.enabled);
+        map(GL_TEXTURE_2D, c->texture.enabled_2d);
         default:
             return NULL;
     }

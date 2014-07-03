@@ -1,13 +1,18 @@
 #include "zgl.h"
 
 void glAlphaFunc(GLenum func, GLclampf ref) {
-    fprintf(stderr, "STUB: glAlphaFunc()\n");
+    GLContext *c = gl_get_context();
+    c->alpha.func = func;
+    c->alpha.ref = ref;
 }
 
 void glBlendFunc(GLenum sfactor, GLenum dfactor) {
-    fprintf(stderr, "STUB: glAlphaFunc()\n");
+    GLContext *c = gl_get_context();
+    c->blend.sfactor = sfactor;
+    c->blend.dfactor = dfactor;
 }
 
 void glLogicOp(GLenum opcode) {
-    fprintf(stderr, "STUB: glLogicOp()\n");
+    GLContext *c = gl_get_context();
+    c->logic.op = opcode;
 }
