@@ -14,8 +14,8 @@ void glMaterialfv(GLenum face, GLenum pname, const GLfloat *v) {
         glMaterialfv(GL_FRONT, pname, v);
         face = GL_BACK;
     }
-    if (face == GL_FRONT) m = &c->materials[0];
-    else m = &c->materials[1];
+    if (face == GL_FRONT) m = &c->material.materials[0];
+    else m = &c->material.materials[1];
 
     switch(pname) {
         case GL_EMISSION:
@@ -51,8 +51,8 @@ void glMaterialfv(GLenum face, GLenum pname, const GLfloat *v) {
 
 void glColorMaterial(GLenum face, GLenum mode) {
     GLContext *c = gl_get_context();
-    c->current_color_material_mode = face;
-    c->current_color_material_type = mode;
+    c->material.color.current_mode = face;
+    c->material.color.current_type = mode;
 }
 
 void glLightf(GLenum light, GLenum pname, GLfloat param) {
@@ -69,7 +69,7 @@ void glLightfv(GLenum light, GLenum pname, const GLfloat *param) {
     assert(light >= GL_LIGHT0 && light < GL_LIGHT0 + MAX_LIGHTS );
 
     V4 v = *(V4 *)param;
-    l = &c->lights[light - GL_LIGHT0];
+    l = &c->light.lights[light - GL_LIGHT0];
 
     switch(pname) {
         case GL_AMBIENT:
@@ -84,7 +84,7 @@ void glLightfv(GLenum light, GLenum pname, const GLfloat *param) {
         case GL_POSITION:
             {
                 V4 pos;
-                gl_M4_MulV4(&pos, c->matrix_stack_ptr[0], &v);
+                gl_M4_MulV4(&pos, c->matrix.stack_ptr[0], &v);
 
                 l->position = pos;
 
@@ -140,13 +140,13 @@ void glLightModelfv(GLenum pname, const GLfloat *param) {
 
     switch(pname) {
         case GL_LIGHT_MODEL_AMBIENT:
-            c->ambient_light_model = v;
+            c->light.model.ambient = v;
             break;
         case GL_LIGHT_MODEL_LOCAL_VIEWER:
-            c->local_light_model = (int)v.v[0];
+            c->light.model.local = (int)v.v[0];
             break;
         case GL_LIGHT_MODEL_TWO_SIDE:
-            c->light_model_two_side = (int)v.v[0];
+            c->light.model.two_side = (int)v.v[0];
             break;
         default:
             fprintf(stderr, "glLightModel: illegal pname: 0x%x\n", pname);
@@ -168,20 +168,20 @@ void gl_shade_vertex(GLContext *c, GLVertex *v) {
     GLLight *l;
     V3 n, s, d;
     float dist, tmp, att;
-    int twoside = c->light_model_two_side;
+    int twoside = c->light.model.two_side;
 
-    m = &c->materials[0];
+    m = &c->material.materials[0];
 
     n.X = v->normal.X;
     n.Y = v->normal.Y;
     n.Z = v->normal.Z;
 
-    R = m->emission.v[0] + m->ambient.v[0] * c->ambient_light_model.v[0];
-    G = m->emission.v[1] + m->ambient.v[1] * c->ambient_light_model.v[1];
-    B = m->emission.v[2] + m->ambient.v[2] * c->ambient_light_model.v[2];
+    R = m->emission.v[0] + m->ambient.v[0] * c->light.model.ambient.v[0];
+    G = m->emission.v[1] + m->ambient.v[1] * c->light.model.ambient.v[1];
+    B = m->emission.v[2] + m->ambient.v[2] * c->light.model.ambient.v[2];
     A = clampf(m->diffuse.v[3], 0, 1);
 
-    for (l = c->first_light; l != NULL; l = l->next) {
+    for (l = c->light.first; l != NULL; l = l->next) {
         float lR, lB, lG;
 
         /* ambient */
@@ -234,7 +234,7 @@ void gl_shade_vertex(GLContext *c, GLVertex *v) {
 
             /* specular light */
 
-            if (c->local_light_model) {
+            if (c->light.model.local) {
                 V3 vcoord;
                 vcoord.X = v->ec.X;
                 vcoord.Y = v->ec.Y;

@@ -42,7 +42,7 @@ void glTexCoord2fv(const float *v) {
 
 /* Special Functions */
 void glFlush() {
-  /* nothing to do */
+    /* nothing to do */
 }
 
 /* Non standard functions */

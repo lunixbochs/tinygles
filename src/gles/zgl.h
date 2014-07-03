@@ -36,9 +36,10 @@
 #define SPECULAR_BUFFER_RESOLUTION 1024
 
 
-#define MAX_MODELVIEW_STACK_DEPTH  32
-#define MAX_PROJECTION_STACK_DEPTH 8
-#define MAX_TEXTURE_STACK_DEPTH    8
+#define MAX_MODELVIEW_STACK_DEPTH  64
+#define MAX_PROJECTION_STACK_DEPTH 32
+#define MAX_TEXTURE_STACK_DEPTH    32
+
 #define MAX_NAME_STACK_DEPTH       64
 #define MAX_TEXTURE_LEVELS         11
 #define MAX_LIGHTS                 16
@@ -62,7 +63,7 @@ typedef struct GLLight {
     V4 ambient;
     V4 diffuse;
     V4 specular;
-    V4 position;	
+    V4 position;
     V3 spot_direction;
     float spot_exponent;
     float spot_cutoff;
@@ -85,9 +86,8 @@ typedef struct GLMaterial {
 
     /* computed values */
     int shininess_i;
-    int do_specular;  
+    int do_specular;
 } GLMaterial;
-
 
 typedef struct GLViewport {
     int xmin, ymin, xsize, ysize;
@@ -149,55 +149,73 @@ typedef struct {
     float x, y, z;
 } GLRasterPos;
 
+typedef struct {
+    float *p;
+    int size;
+    int stride;
+} GLArray;
+
 struct GLContext;
 
-typedef void (*gl_draw_triangle_func)(struct GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2); 
-/* display context */
+typedef void (*gl_draw_triangle_func)(struct GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2);
 
+/* display context */
 typedef struct GLContext {
     /* Z buffer */
     ZBuffer *zb;
 
-    /* lights */
-    GLLight lights[MAX_LIGHTS];
-    GLLight *first_light;
-    V4 ambient_light_model;
-    int local_light_model;
-    int lighting_enabled;
-    int light_model_two_side;
-
-    /* materials */
-    GLMaterial materials[2];
-    int color_material_enabled;
-    int current_color_material_mode;
-    int current_color_material_type;
-
-    /* textures */
-    GLTexture *current_texture;
-    int texture_2d_enabled;
-
     /* shared state */
     GLSharedState shared_state;
+
+    /* viewport */
+    GLViewport viewport;
+
+    /* lights */
+    struct {
+        GLLight lights[MAX_LIGHTS];
+        GLLight *first;
+        struct {
+            V4 ambient;
+            int local;
+            int two_side;
+        } model;
+        int enabled;
+    } light;
+
+    /* materials */
+    struct {
+        GLMaterial materials[2];
+        struct {
+            int enabled;
+            int current_mode;
+            int current_type;
+        } color;
+    } material;
+
+    /* textures */
+    struct {
+        GLTexture *current;
+        int enabled_2d;
+    } texture;
 
     /* current list */
     GLParamBuffer *current_op_buffer;
     int current_op_buffer_index;
-    int exec_flag, compile_flag, print_flag; 
+    int exec_flag, compile_flag, print_flag;
+
     /* matrix */
+    struct {
+        int mode;
+        M4 *stack[3];
+        M4 *stack_ptr[3];
+        int stack_depth_max[3];
 
-    int matrix_mode;
-    M4 *matrix_stack[3];
-    M4 *matrix_stack_ptr[3];
-    int matrix_stack_depth_max[3];
-
-    M4 matrix_model_view_inv;
-    M4 matrix_model_projection;
-    int matrix_model_projection_updated;
-    int matrix_model_projection_no_w_transform; 
-    int apply_texture_matrix;
-
-    /* viewport */
-    GLViewport viewport;
+        M4 model_view_inv;
+        M4 model_projection;
+        int model_projection_updated;
+        int model_projection_no_w_transform;
+        int apply_texture;
+    } matrix;
 
     /* current state */
     int polygon_mode_back;
@@ -212,26 +230,25 @@ typedef struct GLContext {
 
     /* selection */
     int render_mode;
-    unsigned int *select_buffer;
-    int select_size;
-    unsigned int *select_ptr,*select_hit;
-    int select_overflow;
-    int select_hits;
+    struct {
+        unsigned int *buffer;
+        int size;
+        unsigned int *ptr, *hit;
+        int overflow;
+        int hits;
+    } select;
 
     /* names */
-    unsigned int name_stack[MAX_NAME_STACK_DEPTH];
-    int name_stack_size;
+    struct {
+        unsigned int stack[MAX_NAME_STACK_DEPTH];
+        int stack_size;
+    } name;
 
     /* clear */
-    float clear_depth;
-    V4 clear_color;
-
-    /* current vertex state */
-    V4 current_color;
-    unsigned int longcurrent_color[3]; /* precomputed integer color */
-    V4 current_normal;
-    V4 current_tex_coord;
-    int current_edge_flag;
+    struct {
+        float depth;
+        V4 color;
+    } clear;
 
     /* glBegin / glEnd */
     int in_begin;
@@ -240,26 +257,32 @@ typedef struct GLContext {
     int vertex_max;
     GLVertex *vertex;
 
+    /* current vertex state */
+    struct {
+        V4 color;
+        unsigned int longcolor[3]; /* precomputed integer color */
+        V4 normal;
+        V4 tex_coord;
+        int edge_flag;
+    } current;
+
     /* opengl 1.1 arrays  */
-    float *vertex_array;
-    int vertex_array_size;
-    int vertex_array_stride;
-    float *normal_array;
-    int normal_array_stride;
-    float *color_array;
-    int color_array_size;
-    int color_array_stride;
-    float *texcoord_array;
-    int texcoord_array_size;
-    int texcoord_array_stride;
+    struct {
+        GLArray vertex,
+                normal,
+                color,
+                tex_coord;
+    } array;
     int client_states;
 
     /* opengl 1.1 polygon offset */
-    float offset_factor;
-    float offset_units;
-    int offset_states;
+    struct {
+        float factor;
+        float units;
+        int states;
+    } offset;
 
-    /* specular buffer. could probably be shared between contexts, 
+    /* specular buffer. could probably be shared between contexts,
        but that wouldn't be 100% thread safe */
     GLSpecBuf *specbuf_first;
     int specbuf_used_counter;
@@ -267,6 +290,7 @@ typedef struct GLContext {
 
     /* opaque structure for user's use */
     void *opaque;
+
     /* resize viewport function */
     int (*gl_resize_viewport)(struct GLContext *c, int *xsize, int *ysize);
 
@@ -323,12 +347,12 @@ GLSpecBuf *specbuf_get_buffer(GLContext *c, const int shininess_i, const float s
 static inline int gl_clipcode(float x, float y, float z, float w1) {
     float w;
 
-    w=w1 * (1.0 + CLIP_EPSILON);
+    w = w1 * (1.0 + CLIP_EPSILON);
     return (x < -w)     |
         ((x > w)  << 1) |
         ((y < -w) << 2) |
         ((y > w)  << 3) |
-        ((z < -w) << 4) | 
+        ((z < -w) << 4) |
         ((z > w)  << 5);
 }
 

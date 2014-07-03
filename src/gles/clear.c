@@ -2,23 +2,23 @@
 
 void glClearColor(float r, float g, float b, float a) {
     GLContext *c = gl_get_context();
-    c->clear_color.v[0] = r;
-    c->clear_color.v[1] = g;
-    c->clear_color.v[2] = b;
-    c->clear_color.v[3] = a;
+    c->clear.color.v[0] = r;
+    c->clear.color.v[1] = g;
+    c->clear.color.v[2] = b;
+    c->clear.color.v[3] = a;
 }
 
 void glClearDepth(double depth) {
     GLContext *c = gl_get_context();
-    c->clear_depth = depth;
+    c->clear.depth = depth;
 }
 
 void glClear(GLbitfield mask) {
     GLContext *c = gl_get_context();
     int z = 0;
-    int r = (int)(c->clear_color.v[0]*65535);
-    int g = (int)(c->clear_color.v[1]*65535);
-    int b = (int)(c->clear_color.v[2]*65535);
+    int r = (int)(c->clear.color.v[0] * 65535);
+    int g = (int)(c->clear.color.v[1] * 65535);
+    int b = (int)(c->clear.color.v[2] * 65535);
 
     /* TODO : correct value of Z */
 

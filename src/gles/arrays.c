@@ -33,38 +33,39 @@ void glArrayElement(GLint idx) {
     int states = c->client_states;
 
     if (states & COLOR_ARRAY) {
-        int size = c->color_array_size; 
-        i = idx * (size + c->color_array_stride);
+        int size = c->array.color.size;
+        float *ptr = c->array.color.p;
+        i = idx * (size + c->array.color.stride);
         glColor4f(
-            c->color_array[i],
-            c->color_array[i+1],
-            c->color_array[i+2],
-            size > 3 ? c->color_array[i+3] : 1.0f
+            ptr[i],
+            ptr[i+1],
+            ptr[i+2],
+            size > 3 ? ptr[i+3] : 1.0f
         );
     }
     if (states & NORMAL_ARRAY) {
-        i = idx * (3 + c->normal_array_stride);
-        c->current_normal.X = c->normal_array[i];
-        c->current_normal.Y = c->normal_array[i+1];
-        c->current_normal.Z = c->normal_array[i+2];
-        c->current_normal.Z = 0.0f;
+        i = idx * (3 + c->array.normal.stride);
+        c->current.normal.X = c->array.normal.p[i];
+        c->current.normal.Y = c->array.normal.p[i+1];
+        c->current.normal.Z = c->array.normal.p[i+2];
+        c->current.normal.Z = 0.0f;
     }
     if (states & TEXCOORD_ARRAY) {
-        int size = c->texcoord_array_size;
-        i = idx * (size + c->texcoord_array_stride);
-        c->current_tex_coord.X = c->texcoord_array[i];
-        c->current_tex_coord.Y = c->texcoord_array[i+1];
-        c->current_tex_coord.Z = size > 2 ? c->texcoord_array[i+2] : 0.0f;
-        c->current_tex_coord.W = size > 3 ? c->texcoord_array[i+3] : 1.0f;
+        int size = c->array.tex_coord.size;
+        i = idx * (size + c->array.tex_coord.stride);
+        c->current.tex_coord.X = c->array.tex_coord.p[i];
+        c->current.tex_coord.Y = c->array.tex_coord.p[i+1];
+        c->current.tex_coord.Z = size > 2 ? c->array.tex_coord.p[i+2] : 0.0f;
+        c->current.tex_coord.W = size > 3 ? c->array.tex_coord.p[i+3] : 1.0f;
     }
     if (states & VERTEX_ARRAY) {
-        int size = c->vertex_array_size;
-        i = idx * (size + c->vertex_array_stride);
+        int size = c->array.vertex.size;
+        i = idx * (size + c->array.vertex.stride);
         glVertex4f(
-            c->vertex_array[i],
-            c->vertex_array[i+1],
-            size > 2 ? c->vertex_array[i+2] : 0.0f,
-            size > 3 ? c->vertex_array[i+3] : 1.0f
+            c->array.vertex.p[i],
+            c->array.vertex.p[i+1],
+            size > 2 ? c->array.vertex.p[i+2] : 0.0f,
+            size > 3 ? c->array.vertex.p[i+3] : 1.0f
         );
     }
 }
@@ -75,7 +76,7 @@ void glEnableClientState(GLenum array) {
     switch(array) {
         case GL_VERTEX_ARRAY:
             bit = VERTEX_ARRAY;
-            break;  
+            break;
         case GL_NORMAL_ARRAY:
             bit = NORMAL_ARRAY;
             break;
@@ -98,7 +99,7 @@ void glDisableClientState(GLenum array) {
     switch(array) {
         case GL_VERTEX_ARRAY:
             bit = ~VERTEX_ARRAY;
-            break;  
+            break;
         case GL_NORMAL_ARRAY:
             bit = ~NORMAL_ARRAY;
             break;
@@ -116,33 +117,33 @@ void glDisableClientState(GLenum array) {
 }
 
 // TODO: support other types? or do we want to assume glshim is helping us?
-void glVertexPointer(GLint size, GLenum type, GLsizei stride, 
+void glVertexPointer(GLint size, GLenum type, GLsizei stride,
                      const GLvoid *pointer) {
     GLContext *c = gl_get_context();
-    c->vertex_array_size = size;
-    c->vertex_array_stride = stride;
-    c->vertex_array = pointer;
+    c->array.vertex.size = size;
+    c->array.vertex.stride = stride;
+    c->array.vertex.p = pointer;
 }
 
 void glColorPointer(GLint size, GLenum type, GLsizei stride,
                     const GLvoid *pointer) {
     GLContext *c = gl_get_context();
-    c->color_array_size = size;
-    c->color_array_stride = stride;
-    c->color_array = pointer;
+    c->array.color.size = size;
+    c->array.color.stride = stride;
+    c->array.color.p = pointer;
 }
 
-void glNormalPointer(GLenum type, GLsizei stride, 
+void glNormalPointer(GLenum type, GLsizei stride,
                 const GLvoid *pointer) {
     GLContext *c = gl_get_context();
-    c->normal_array_stride = stride;
-    c->normal_array = pointer;
+    c->array.normal.stride = stride;
+    c->array.normal.p = pointer;
 }
 
-void glTexCoordPointer(GLint size, GLenum type, GLsizei stride, 
+void glTexCoordPointer(GLint size, GLenum type, GLsizei stride,
                        const GLvoid *pointer) {
     GLContext *c = gl_get_context();
-    c->texcoord_array_size = size;
-    c->texcoord_array_stride = stride;
-    c->texcoord_array = pointer;
+    c->array.tex_coord.size = size;
+    c->array.tex_coord.stride = stride;
+    c->array.tex_coord.p = pointer;
 }

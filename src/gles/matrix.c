@@ -7,20 +7,20 @@ void gl_print_matrix(const float *m) {
 }
 
 static inline void gl_matrix_update(GLContext *c) {
-    c->matrix_model_projection_updated = (c->matrix_mode <= 1);
+    c->matrix.model_projection_updated = (c->matrix.mode <= 1);
 }
 
 void glMatrixMode(GLenum mode) {
     GLContext *c = gl_get_context();
     switch(mode) {
         case GL_MODELVIEW:
-            c->matrix_mode=0;
+            c->matrix.mode = 0;
             break;
         case GL_PROJECTION:
-            c->matrix_mode=1;
+            c->matrix.mode = 1;
             break;
         case GL_TEXTURE:
-            c->matrix_mode=2;
+            c->matrix.mode = 2;
             break;
         default:
             assert(0);
@@ -30,7 +30,7 @@ void glMatrixMode(GLenum mode) {
 void glLoadMatrixf(const GLfloat *matrix) {
     GLContext *c = gl_get_context();
     M4 *m;
-    m=c->matrix_stack_ptr[c->matrix_mode];
+    m = c->matrix.stack_ptr[c->matrix.mode];
 
     int q = 0;
     for(int i = 0; i < 4; i++) {
@@ -46,7 +46,7 @@ void glLoadMatrixf(const GLfloat *matrix) {
 
 void glLoadIdentity() {
     GLContext *c = gl_get_context();
-    gl_M4_Id(c->matrix_stack_ptr[c->matrix_mode]);
+    gl_M4_Id(c->matrix.stack_ptr[c->matrix.mode]);
     gl_matrix_update(c);
 }
 
@@ -63,19 +63,19 @@ void glMultMatrixf(const GLfloat *matrix) {
         q+=4;
     }
 
-    gl_M4_MulLeft(c->matrix_stack_ptr[c->matrix_mode], &m);
+    gl_M4_MulLeft(c->matrix.stack_ptr[c->matrix.mode], &m);
     gl_matrix_update(c);
 }
 
 
 void glPushMatrix() {
   GLContext *c = gl_get_context();
-  int n = c->matrix_mode;
+  int n = c->matrix.mode;
   M4 *m;
 
-  assert((c->matrix_stack_ptr[n] - c->matrix_stack[n] + 1) < c->matrix_stack_depth_max[n]);
+  assert((c->matrix.stack_ptr[n] - c->matrix.stack[n] + 1) < c->matrix.stack_depth_max[n]);
 
-  m = ++c->matrix_stack_ptr[n];
+  m = ++c->matrix.stack_ptr[n];
 
   gl_M4_Move(&m[0], &m[-1]);
 
@@ -84,10 +84,10 @@ void glPushMatrix() {
 
 void glPopMatrix() {
     GLContext *c = gl_get_context();
-    int n = c->matrix_mode;
+    int n = c->matrix.mode;
 
-    assert(c->matrix_stack_ptr[n] > c->matrix_stack[n]);
-    c->matrix_stack_ptr[n]--;
+    assert(c->matrix.stack_ptr[n] > c->matrix.stack[n]);
+    c->matrix.stack_ptr[n]--;
     gl_matrix_update(c);
 }
 
@@ -154,7 +154,7 @@ void glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
             }
     }
 
-    gl_M4_MulLeft(c->matrix_stack_ptr[c->matrix_mode], &m);
+    gl_M4_MulLeft(c->matrix.stack_ptr[c->matrix.mode], &m);
 
     gl_matrix_update(c);
 }
@@ -162,7 +162,7 @@ void glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
 void glScalef(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
     float *m;
-    m = &c->matrix_stack_ptr[c->matrix_mode]->m[0][0];
+    m = &c->matrix.stack_ptr[c->matrix.mode]->m[0][0];
 
     m[0]  *= x; m[1]  *= y; m[2]  *= z;
     m[4]  *= x; m[5]  *= y; m[6]  *= z;
@@ -174,7 +174,7 @@ void glScalef(GLfloat x, GLfloat y, GLfloat z) {
 void glTranslatef(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
     float *m;
-    m = &c->matrix_stack_ptr[c->matrix_mode]->m[0][0];
+    m = &c->matrix.stack_ptr[c->matrix.mode]->m[0][0];
 
     m[3]  = m[0]  * x + m[1]  * y + m[2]  * z + m[3];
     m[7]  = m[4]  * x + m[5]  * y + m[6]  * z + m[7];
@@ -203,7 +203,7 @@ void glFrustumf(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloa
     r[8]  = 0; r[9]  = 0; r[10] =  C; r[11] = D;
     r[12] = 0; r[13] = 0; r[14] = -1; r[15] = 0;
 
-    gl_M4_MulLeft(c->matrix_stack_ptr[c->matrix_mode], &m);
+    gl_M4_MulLeft(c->matrix.stack_ptr[c->matrix.mode], &m);
 
     gl_matrix_update(c);
 }
@@ -227,7 +227,7 @@ void glOrthof(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat 
         0, 0, 0, 1,
     };
 
-    gl_M4_MulLeft(c->matrix_stack_ptr[c->matrix_mode], (M4 *)&r);
+    gl_M4_MulLeft(c->matrix.stack_ptr[c->matrix.mode], (M4 *)&r);
 
     gl_matrix_update(c);
 }

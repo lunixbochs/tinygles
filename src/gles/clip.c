@@ -19,20 +19,20 @@ void gl_transform_to_viewport(GLContext *c, GLVertex *v) {
     v->zp.y = (int)(v->pc.Y * winv * c->viewport.scale.Y + c->viewport.trans.Y);
     v->zp.z = (int)(v->pc.Z * winv * c->viewport.scale.Z + c->viewport.trans.Z);
     /* color */
-    if (c->lighting_enabled) {
+    if (c->light.enabled) {
         v->zp.r = (int)(v->color.v[0] * (ZB_POINT_RED_MAX - ZB_POINT_RED_MIN) + ZB_POINT_RED_MIN);
         v->zp.g = (int)(v->color.v[1] * (ZB_POINT_GREEN_MAX - ZB_POINT_GREEN_MIN) + ZB_POINT_GREEN_MIN);
         v->zp.b = (int)(v->color.v[2] * (ZB_POINT_BLUE_MAX - ZB_POINT_BLUE_MIN) + ZB_POINT_BLUE_MIN);
     } else {
         /* no need to convert to integer if no lighting : take current color */
-        v->zp.r = c->longcurrent_color[0];
-        v->zp.g = c->longcurrent_color[1];
-        v->zp.b = c->longcurrent_color[2];
+        v->zp.r = c->current.longcolor[0];
+        v->zp.g = c->current.longcolor[1];
+        v->zp.b = c->current.longcolor[2];
     }
 
     /* texture */
 
-    if (c->texture_2d_enabled) {
+    if (c->texture.enabled_2d) {
         v->zp.s = (int)(v->tex_coord.X * (ZB_POINT_S_MAX - ZB_POINT_S_MIN) + ZB_POINT_S_MIN);
         v->zp.t = (int)(v->tex_coord.Y * (ZB_POINT_T_MAX - ZB_POINT_T_MIN) + ZB_POINT_T_MIN);
     }
@@ -208,7 +208,7 @@ static inline void updateTmp(GLContext *c, GLVertex *q, GLVertex *p0, GLVertex *
         q->color.v[2] = p0->color.v[2];
     }
 
-    if (c->texture_2d_enabled) {
+    if (c->texture.enabled_2d) {
         q->tex_coord.X = p0->tex_coord.X + (p1->tex_coord.X - p0->tex_coord.X) * t;
         q->tex_coord.Y = p0->tex_coord.Y + (p1->tex_coord.Y - p0->tex_coord.Y) * t;
     }
@@ -372,11 +372,11 @@ void gl_draw_triangle_fill(GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p
     }
 #endif
     
-    if (c->texture_2d_enabled) {
+    if (c->texture.enabled_2d) {
 #ifdef PROFILE
         count_triangles_textured++;
 #endif
-        ZB_setTexture(c->zb, c->current_texture->images[0].pixmap);
+        ZB_setTexture(c->zb, c->texture.current->images[0].pixmap);
         ZB_fillTriangleMappingPerspective(c->zb, &p0->zp, &p1->zp, &p2->zp);
     } else if (c->current_shade_model == GL_SMOOTH) {
         ZB_fillTriangleSmooth(c->zb, &p0->zp, &p1->zp, &p2->zp);

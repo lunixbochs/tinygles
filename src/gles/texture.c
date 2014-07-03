@@ -57,8 +57,8 @@ GLTexture *alloc_texture(GLContext *c, int h) {
 void glInitTextures(GLContext *c) {
   /* textures */
 
-  c->texture_2d_enabled = 0;
-  c->current_texture = find_texture(c,0);
+  c->texture.enabled_2d = 0;
+  c->texture.current = find_texture(c, 0);
 }
 
 void glGenTextures(int n, unsigned int *textures) {
@@ -88,7 +88,7 @@ void glDeleteTextures(GLsizei n, const GLuint *textures) {
     for (int i = 0; i < n; i++) {
         t = find_texture(c, textures[i]);
         if (t != NULL && t != 0) {
-            if (t == c->current_texture) {
+            if (t == c->texture.current) {
                 glBindTexture(GL_TEXTURE_2D, 0);
             }
             free_texture(c, textures[i]);
@@ -107,7 +107,7 @@ void glBindTexture(GLenum target, GLuint texture) {
     if (t == NULL) {
         t = alloc_texture(c, texture);
     }
-    c->current_texture = t;
+    c->texture.current = t;
 }
 
 
@@ -146,7 +146,7 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
         pixels1 = (GLubyte *)pixels;
     }
 
-    im = &c->current_texture->images[level];
+    im = &c->texture.current->images[level];
     im->xsize = width;
     im->ysize = height;
     if (im->pixmap != NULL) free(im->pixmap);

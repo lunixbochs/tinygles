@@ -29,7 +29,6 @@ void glViewport(GLint x, GLint y, GLint width, GLint height) {
             fprintf(stderr, "glViewport: size too small");
         }
 
-        tgl_trace("glViewport: %d %d %d %d\n", xmin, ymin, xsize, ysize);
         c->viewport.xmin  = xmin;
         c->viewport.ymin  = ymin;
         c->viewport.xsize = xsize;
@@ -90,6 +89,6 @@ void glHint(GLenum target, GLenum mode) {
 
 void glPolygonOffset(GLfloat factor, GLfloat units) {
     GLContext *c = gl_get_context();
-    c->offset_factor = factor;
-    c->offset_units = units;
+    c->offset.factor = factor;
+    c->offset.units = units;
 }

@@ -48,7 +48,7 @@ void glGetFloatv(GLenum pname, GLfloat *v) {
             mnr++;
         case GL_MODELVIEW_MATRIX:
             {
-                float *p = &c->matrix_stack_ptr[mnr]->m[0][0];
+                float *p = &c->matrix.stack_ptr[mnr]->m[0][0];
                 for (i = 0; i < 4; i++) {
                     *v++ = p[0];
                     *v++ = p[4];

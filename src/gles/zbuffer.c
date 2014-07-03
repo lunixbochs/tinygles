@@ -130,7 +130,7 @@ static void ZB_copyBuffer(ZBuffer * zb, void *buf, int linesize) {
 
 #ifdef TGL_FEATURE_32_BITS
 
-#define RGB16_TO_RGB32(p0, p1, v) {
+#define RGB16_TO_RGB32(p0, p1, v) {\
     unsigned int g, b, gb;\
     g = (v & 0x07E007E0) << 5;\
     b = (v & 0x001F001F) << 3;\

@@ -2,39 +2,39 @@
 
 void glNormal3f(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
-    c->current_normal.X = x;
-    c->current_normal.Y = y;
-    c->current_normal.Z = z;
-    c->current_normal.W = 0;
+    c->current.normal.X = x;
+    c->current.normal.Y = y;
+    c->current.normal.Z = z;
+    c->current.normal.W = 0;
 }
 
 void glTexCoord4f(GLfloat s, GLfloat t, GLfloat r, GLfloat q) {
     GLContext *c = gl_get_context();
-    c->current_tex_coord.X = s;
-    c->current_tex_coord.Y = t;
-    c->current_tex_coord.Z = r;
-    c->current_tex_coord.W = q;
+    c->current.tex_coord.X = s;
+    c->current.tex_coord.Y = t;
+    c->current.tex_coord.Z = r;
+    c->current.tex_coord.W = q;
 }
 
 void glEdgeFlag(GLboolean flag) {
     GLContext *c = gl_get_context();
-    c->current_edge_flag = flag;
+    c->current.edge_flag = flag;
 }
 
 void glColor4f(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
     GLContext *c = gl_get_context();
-    c->current_color.X = r;
-    c->current_color.Y = g;
-    c->current_color.Z = b;
-    c->current_color.W = a;
+    c->current.color.X = r;
+    c->current.color.Y = g;
+    c->current.color.Z = b;
+    c->current.color.W = a;
 
-    c->longcurrent_color[0] = (unsigned int) (r * (ZB_POINT_RED_MAX - ZB_POINT_RED_MIN) + ZB_POINT_RED_MIN);
-    c->longcurrent_color[1] = (unsigned int) (g * (ZB_POINT_GREEN_MAX - ZB_POINT_GREEN_MIN) + ZB_POINT_GREEN_MIN);
-    c->longcurrent_color[2] = (unsigned int) (b * (ZB_POINT_BLUE_MAX - ZB_POINT_BLUE_MIN) + ZB_POINT_BLUE_MIN);
+    c->current.longcolor[0] = (unsigned int) (r * (ZB_POINT_RED_MAX - ZB_POINT_RED_MIN) + ZB_POINT_RED_MIN);
+    c->current.longcolor[1] = (unsigned int) (g * (ZB_POINT_GREEN_MAX - ZB_POINT_GREEN_MIN) + ZB_POINT_GREEN_MIN);
+    c->current.longcolor[2] = (unsigned int) (b * (ZB_POINT_BLUE_MAX - ZB_POINT_BLUE_MIN) + ZB_POINT_BLUE_MIN);
 
-    if (c->color_material_enabled) {
+    if (c->material.color.enabled) {
         GLfloat color[4] = {r, g, b, a};
-        glMaterialfv(c->current_color_material_mode, c->current_color_material_type, color);
+        glMaterialfv(c->material.color.current_mode, c->material.color.current_type, color);
     }
 }
 
@@ -65,27 +65,27 @@ void glBegin(GLenum type) {
     c->vertex_n = 0;
     c->vertex_cnt = 0;
 
-    if (c->matrix_model_projection_updated) {
+    if (c->matrix.model_projection_updated) {
 
-        if (c->lighting_enabled) {
+        if (c->light.enabled) {
             /* precompute inverse modelview */
-            gl_M4_Inv(&tmp, c->matrix_stack_ptr[0]);
-            gl_M4_Transpose(&c->matrix_model_view_inv, &tmp);
+            gl_M4_Inv(&tmp, c->matrix.stack_ptr[0]);
+            gl_M4_Transpose(&c->matrix.model_view_inv, &tmp);
         } else {
-            float *m = &c->matrix_model_projection.m[0][0];
+            float *m = &c->matrix.model_projection.m[0][0];
             /* precompute projection matrix */
-            gl_M4_Mul(&c->matrix_model_projection, c->matrix_stack_ptr[1], c->matrix_stack_ptr[0]);
+            gl_M4_Mul(&c->matrix.model_projection, c->matrix.stack_ptr[1], c->matrix.stack_ptr[0]);
             /* test to accelerate computation */
-            c->matrix_model_projection_no_w_transform = 0;
+            c->matrix.model_projection_no_w_transform = 0;
             if (m[12] == 0.0 && m[13] == 0.0 && m[14] == 0.0) {
-                c->matrix_model_projection_no_w_transform = 1;
+                c->matrix.model_projection_no_w_transform = 1;
             }
         }
 
         /* test if the texture matrix is not Identity */
-        c->apply_texture_matrix = !gl_M4_IsId(c->matrix_stack_ptr[2]);
+        c->matrix.apply_texture = !gl_M4_IsId(c->matrix.stack_ptr[2]);
 
-        c->matrix_model_projection_updated = 0;
+        c->matrix.model_projection_updated = 0;
     }
     /*  viewport */
     if (c->viewport.updated) {
@@ -129,24 +129,24 @@ static inline void gl_vertex_transform(GLContext *c, GLVertex *v) {
     float *m;
     V4 *n;
 
-    if (c->lighting_enabled) {
+    if (c->light.enabled) {
         /* eye coordinates needed for lighting */
 
-        m = &c->matrix_stack_ptr[0]->m[0][0];
+        m = &c->matrix.stack_ptr[0]->m[0][0];
         v->ec.X = (v->coord.X * m[0]  + v->coord.Y * m[1]  + v->coord.Z * m[2]  + m[3]);
         v->ec.Y = (v->coord.X * m[4]  + v->coord.Y * m[5]  + v->coord.Z * m[6]  + m[7]);
         v->ec.Z = (v->coord.X * m[8]  + v->coord.Y * m[9]  + v->coord.Z * m[10] + m[11]);
         v->ec.W = (v->coord.X * m[12] + v->coord.Y * m[13] + v->coord.Z * m[14] + m[15]);
 
         /* projection coordinates */
-        m = &c->matrix_stack_ptr[1]->m[0][0];
+        m = &c->matrix.stack_ptr[1]->m[0][0];
         v->pc.X = (v->ec.X * m[0]  + v->ec.Y * m[1]  + v->ec.Z * m[2]  + v->ec.W * m[3]);
         v->pc.Y = (v->ec.X * m[4]  + v->ec.Y * m[5]  + v->ec.Z * m[6]  + v->ec.W * m[7]);
         v->pc.Z = (v->ec.X * m[8]  + v->ec.Y * m[9]  + v->ec.Z * m[10] + v->ec.W * m[11]);
         v->pc.W = (v->ec.X * m[12] + v->ec.Y * m[13] + v->ec.Z * m[14] + v->ec.W * m[15]);
 
-        m = &c->matrix_model_view_inv.m[0][0];
-        n = &c->current_normal;
+        m = &c->matrix.model_view_inv.m[0][0];
+        n = &c->current.normal;
 
         v->normal.X = (n->X * m[0] + n->Y * m[1] + n->Z * m[2]);
         v->normal.Y = (n->X * m[4] + n->Y * m[5] + n->Z * m[6]);
@@ -158,12 +158,12 @@ static inline void gl_vertex_transform(GLContext *c, GLVertex *v) {
     } else {
         /* no eye coordinates needed, no normal */
         /* NOTE: W = 1 is assumed */
-        m = &c->matrix_model_projection.m[0][0];
+        m = &c->matrix.model_projection.m[0][0];
 
         v->pc.X = (v->coord.X * m[0] + v->coord.Y * m[1] + v->coord.Z * m[2] + m[3]);
         v->pc.Y = (v->coord.X * m[4] + v->coord.Y * m[5] + v->coord.Z * m[6] + m[7]);
         v->pc.Z = (v->coord.X * m[8] + v->coord.Y * m[9] + v->coord.Z * m[10] + m[11]);
-        if (c->matrix_model_projection_no_w_transform) {
+        if (c->matrix.model_projection_no_w_transform) {
             v->pc.W = m[15];
         } else {
             v->pc.W = (v->coord.X * m[12] + v->coord.Y * m[13] + v->coord.Z * m[14] + m[15]);
@@ -210,28 +210,28 @@ void glVertex4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w) {
 
     /* color */
 
-    if (c->lighting_enabled) {
+    if (c->light.enabled) {
         gl_shade_vertex(c, v);
     } else {
-        v->color = c->current_color;
+        v->color = c->current.color;
     }
 
     /* tex coords */
-
-    if (c->texture_2d_enabled) {
-        if (c->apply_texture_matrix) {
-            gl_M4_MulV4(&v->tex_coord, c->matrix_stack_ptr[2], &c->current_tex_coord);
+    if (c->texture.enabled_2d) {
+        if (c->matrix.apply_texture) {
+            gl_M4_MulV4(&v->tex_coord, c->matrix.stack_ptr[2], &c->current.tex_coord);
         } else {
-            v->tex_coord = c->current_tex_coord;
+            v->tex_coord = c->current.tex_coord;
         }
     }
+
     /* precompute the mapping to the viewport */
     if (v->clip_code == 0)
         gl_transform_to_viewport(c, v);
 
     /* edge flag */
 
-    v->edge_flag = c->current_edge_flag;
+    v->edge_flag = c->current.edge_flag;
 
     switch (c->begin_type) {
         case GL_POINTS:

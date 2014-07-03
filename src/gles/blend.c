@@ -1,3 +1,5 @@
+#include "zgl.h"
+
 void glAlphaFunc(GLenum func, GLclampf ref) {
     fprintf(stderr, "STUB: glAlphaFunc()\n");
 }
