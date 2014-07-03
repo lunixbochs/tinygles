@@ -40,58 +40,6 @@ void glViewport(GLint x, GLint y, GLint width, GLint height) {
     }
 }
 
-void glopEnableDisable(GLenum code, int v) {
-    GLContext *c = gl_get_context();
-    switch(code) {
-        case GL_CULL_FACE:
-            c->cull_face_enabled = v;
-            break;
-        case GL_LIGHTING:
-            c->lighting_enabled = v;
-            break;
-        case GL_COLOR_MATERIAL:
-            c->color_material_enabled = v;
-            break;
-        case GL_TEXTURE_2D:
-            c->texture_2d_enabled = v;
-            break;
-        case GL_NORMALIZE:
-            c->normalize_enabled = v;
-            break;
-        case GL_DEPTH_TEST:
-            c->depth_test = v;
-            break;
-        case GL_POLYGON_OFFSET_FILL:
-            if (v) c->offset_states |= TGL_OFFSET_FILL;
-            else c->offset_states &= ~TGL_OFFSET_FILL;
-            break;
-        case GL_POLYGON_OFFSET_POINT:
-            if (v) c->offset_states |= TGL_OFFSET_POINT;
-            else c->offset_states &= ~TGL_OFFSET_POINT;
-            break;
-        case GL_POLYGON_OFFSET_LINE:
-            if (v) c->offset_states |= TGL_OFFSET_LINE;
-            else c->offset_states &= ~TGL_OFFSET_LINE;
-            break;
-        default:
-            if (code >= GL_LIGHT0 && code < GL_LIGHT0 + MAX_LIGHTS) {
-                gl_enable_disable_light(c, code - GL_LIGHT0, v);
-            } else {
-                /*
-                   fprintf(stderr, "glEnableDisable: 0x%X not supported.\n", code);
-                   */
-            }
-            break;
-    }
-}
-
-void glEnable(GLenum cap) {
-    glopEnableDisable(cap, 1);
-}
-
-void glDisable(GLenum cap) {
-    glopEnableDisable(cap, 0);
-}
 
 void glShadeModel(GLenum mode) {
     GLContext *c = gl_get_context();
