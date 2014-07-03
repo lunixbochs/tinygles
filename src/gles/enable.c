@@ -1,5 +1,19 @@
 #include "zgl.h"
 
+static void gl_enable_disable_light(GLContext *c, int light, int v) {
+    GLLight *l = &c->lights[light];
+    if (v && !l->enabled) {
+        l->enabled = 1;
+        l->next = c->first_light;
+        c->first_light = l;
+        l->prev = NULL;
+    } else if (!v && l->enabled) {
+        l->enabled = 0;
+        if (l->prev == NULL) c->first_light = l->next;
+        else l->prev->next = l->next;
+        if (l->next != NULL) l->next->prev = l->prev;
+    }
+
 static int *gl_bit_pointer(GLenum cap) {
 #define map(magic, attr) case magic: return &attr
     switch (cap) {
