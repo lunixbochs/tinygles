@@ -42,6 +42,29 @@ void glGetFloatv(GLenum pname, GLfloat *v) {
     int mnr = 0; /* just a trick to return the correct matrix */
     GLContext *c = gl_get_context();
     switch (pname) {
+        case GL_CURRENT_COLOR: {
+            GLfloat *color = c->current.color.v;
+            *v++ = *color++;
+            *v++ = *color++;
+            *v++ = *color++;
+            *v++ = *color++;
+            break;
+        }
+        case GL_CURRENT_NORMAL: {
+            GLfloat *normal = c->current.normal.v;
+            *v++ = *normal++;
+            *v++ = *normal++;
+            *v++ = *normal++;
+            break;
+        }
+        case GL_CURRENT_TEXTURE_COORDS: {
+            GLfloat *tex_coord = c->current.tex_coord.v;
+            *v++ = *tex_coord++;
+            *v++ = *tex_coord++;
+            *v++ = *tex_coord++;
+            *v++ = *tex_coord++;
+            break;
+        }
         case GL_TEXTURE_MATRIX:
             mnr++;
         case GL_PROJECTION_MATRIX:
