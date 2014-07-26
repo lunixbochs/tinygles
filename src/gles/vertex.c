@@ -93,33 +93,28 @@ void glBegin(GLenum type) {
         c->viewport.updated = 0;
     }
     /* triangle drawing functions */
-    if (c->render_mode == GL_SELECT) {
-        c->draw_triangle_front = gl_draw_triangle_select;
-        c->draw_triangle_back = gl_draw_triangle_select;
-    } else {
-        switch (c->polygon_mode_front) {
-            case GL_POINT:
-                c->draw_triangle_front = gl_draw_triangle_point;
-                break;
-            case GL_LINE:
-                c->draw_triangle_front = gl_draw_triangle_line;
-                break;
-            default:
-                c->draw_triangle_front = gl_draw_triangle_fill;
-                break;
-        }
+    switch (c->polygon_mode_front) {
+        case GL_POINT:
+            c->draw_triangle_front = gl_draw_triangle_point;
+            break;
+        case GL_LINE:
+            c->draw_triangle_front = gl_draw_triangle_line;
+            break;
+        default:
+            c->draw_triangle_front = gl_draw_triangle_fill;
+            break;
+    }
 
-        switch (c->polygon_mode_back) {
-            case GL_POINT:
-                c->draw_triangle_back = gl_draw_triangle_point;
-                break;
-            case GL_LINE:
-                c->draw_triangle_back = gl_draw_triangle_line;
-                break;
-            default:
-                c->draw_triangle_back = gl_draw_triangle_fill;
-                break;
-        }
+    switch (c->polygon_mode_back) {
+        case GL_POINT:
+            c->draw_triangle_back = gl_draw_triangle_point;
+            break;
+        case GL_LINE:
+            c->draw_triangle_back = gl_draw_triangle_line;
+            break;
+        default:
+            c->draw_triangle_back = gl_draw_triangle_fill;
+            break;
     }
 }
 

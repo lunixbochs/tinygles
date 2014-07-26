@@ -38,27 +38,11 @@ void gl_transform_to_viewport(GLContext *c, GLVertex *v) {
     }
 }
 
-
-static void gl_add_select1(GLContext *c, int z1, int z2, int z3) {
-    unsigned int min, max;
-    min = max = z1;
-    if (z2<min) min = z2;
-    if (z3<min) min = z3;
-    if (z2>max) max = z2;
-    if (z3>max) max = z3;
-
-    gl_add_select(c, 0xffffffff-min, 0xffffffff-max);
-}
-
 /* point */
 
 void gl_draw_point(GLContext *c, GLVertex *p0) {
     if (p0->clip_code == 0) {
-        if (c->render_mode == GL_SELECT) {
-            gl_add_select(c, p0->zp.z, p0->zp.z);
-        } else {
-            ZB_plot(c->zb, &p0->zp);
-        }
+        ZB_plot(c->zb, &p0->zp);
     }
 }
 
@@ -106,14 +90,10 @@ void gl_draw_line(GLContext *c, GLVertex *p1, GLVertex *p2) {
     cc2=p2->clip_code;
 
     if ((cc1 | cc2) == 0) {
-        if (c->render_mode == GL_SELECT) {
-            gl_add_select1(c, p1->zp.z, p2->zp.z, p2->zp.z);
-        } else {
-            if (c->depth_test)
-                ZB_line_z(c->zb, &p1->zp, &p2->zp);
-            else
-                ZB_line(c->zb, &p1->zp, &p2->zp);
-        }
+        if (c->depth_test)
+            ZB_line_z(c->zb, &p1->zp, &p2->zp);
+        else
+            ZB_line(c->zb, &p1->zp, &p2->zp);
     } else if ((cc1&cc2) != 0) {
         return;
     } else {
@@ -344,11 +324,6 @@ static void gl_draw_triangle_clip(GLContext *c, GLVertex *p0, GLVertex *p1, GLVe
             gl_draw_triangle_clip(c, q[0], &tmp1, &tmp2, clip_bit+1);
         }
     }
-}
-
-
-void gl_draw_triangle_select(GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2) {
-    gl_add_select1(c, p0->zp.z, p1->zp.z, p2->zp.z);
 }
 
 #ifdef PROFILE

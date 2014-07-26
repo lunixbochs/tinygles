@@ -124,11 +124,6 @@ void glInit(void *zbuffer1) {
     c->clear.color.v[3] = 0;
     c->clear.depth = 0;
 
-    /* selection */
-    c->render_mode = GL_RENDER;
-    c->select.buffer = NULL;
-    c->name.stack_size = 0;
-
     /* matrix */
     c->matrix.mode = 0;
 

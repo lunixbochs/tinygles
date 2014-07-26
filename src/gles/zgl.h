@@ -228,22 +228,6 @@ typedef struct GLContext {
     int normalize_enabled;
     gl_draw_triangle_func draw_triangle_front, draw_triangle_back;
 
-    /* selection */
-    int render_mode;
-    struct {
-        unsigned int *buffer;
-        int size;
-        unsigned int *ptr, *hit;
-        int overflow;
-        int hits;
-    } select;
-
-    /* names */
-    struct {
-        unsigned int stack[MAX_NAME_STACK_DEPTH];
-        int stack_size;
-    } name;
-
     /* clear */
     struct {
         float depth;
@@ -327,13 +311,11 @@ void gl_draw_point(GLContext *c, GLVertex *p0);
 void gl_draw_triangle_point(GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2);
 void gl_draw_triangle_line(GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2);
 void gl_draw_triangle_fill(GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2);
-void gl_draw_triangle_select(GLContext *c, GLVertex *p0, GLVertex *p1, GLVertex *p2);
 
 /* matrix.c */
 void gl_print_matrix(const float *m);
 
 /* light.c */
-void gl_add_select(GLContext *c, unsigned int zmin, unsigned int zmax);
 void gl_shade_vertex(GLContext *c, GLVertex *v);
 
 void glInitTextures(GLContext *c);
