@@ -45,7 +45,7 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
         to = pbuf_pos(zb, pos->x, pos->y - y);
         from = bitmap + (y * 2);
         for (x = 0; x < width; x += 8) {
-            if (pos->x + x > zb->xsize || pos->y + y > zb->ysize)
+            if (pos->x + x > zb->xsize || pos->y - y > zb->ysize)
                 continue;
 
             GLuint b = *from++;
@@ -103,7 +103,7 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
 
     // shrink our pixel ranges to stay inside the viewport
     int ystart = MAX(0, -pos->y);
-    height = MIN(viewport->ysize - pos->y, height);
+    height = MIN(pos->y, height);
 
     int xstart = MAX(0, -pos->x);
     int screen_width = MIN(viewport->xsize - pos->x, width);
