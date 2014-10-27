@@ -64,9 +64,9 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
             for (int j = 8; j--; ) {
                 GLuint value = (b & (1 << j)) ? 0xFFFFFFFF : 0;
 #if TGL_FEATURE_RENDER_BITS == 32
-                *(GLuint *)to = value;
+                *(GLuint *)to |= value;
 #elif TGL_FEATURE_RENDER_BITS == 16
-                *(GLushort *)to = value;
+                *(GLushort *)to |= value;
 #endif
                 to += PSZB;
             }
