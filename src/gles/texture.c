@@ -159,7 +159,7 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
 
 
 void glTexEnvf(GLenum target, GLenum pname, GLfloat param) {
-    printf("STUB: glTexEnvf(%x, %x, %.2f)\n", target, pname, param);
+    fprintf(stderr, "STUB: glTexEnvf(%x, %x, %.2f)\n", target, pname, param);
 }
 
 /* TODO: not all tests are done */

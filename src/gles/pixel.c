@@ -22,7 +22,7 @@ static const colorlayout_t *get_color_map(GLenum format) {
         map(GL_RGB, 0, 1, 2, -1);
         map(GL_RGBA, 0, 1, 2, 3);
         default:
-            printf("get_color_map(): Unsupported pixel format %s\n", gl_str(format));
+            fprintf(stderr, "get_color_map(): Unsupported pixel format %s\n", gl_str(format));
             break;
     }
     static colorlayout_t null = {0};
@@ -82,7 +82,7 @@ bool remap_pixel(const GLvoid *src, GLvoid *dst,
         )
         default:
             // TODO: add glSetError?
-            printf("remap_pixel(): Unsupported source data type: %s\n", gl_str(src_type));
+            fprintf(stderr, "remap_pixel(): Unsupported source data type: %s\n", gl_str(src_type));
             return false;
             break;
     }
@@ -124,7 +124,7 @@ bool remap_pixel(const GLvoid *src, GLvoid *dst,
                  ((GLushort)(color[3] * 15) & 0x0f);
         )
         default:
-            printf("remap_pixel(): Unsupported target data type: %s\n", gl_str(dst_type));
+            fprintf(stderr, "remap_pixel(): Unsupported target data type: %s\n", gl_str(dst_type));
             return false;
             break;
     }
@@ -186,7 +186,7 @@ bool pixel_scale(const GLvoid *old, GLvoid **new,
     GLuint pixel_size, new_width, new_height;
     new_width = width * ratio;
     new_height = height * ratio;
-    printf("scaling %ux%u -> %ux%u\n", width, height, new_width, new_height);
+    fprintf(stderr, "scaling %ux%u -> %ux%u\n", width, height, new_width, new_height);
     GLvoid *dst;
     uintptr_t src, pos, pixel;
 

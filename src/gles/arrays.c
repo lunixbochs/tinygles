@@ -10,7 +10,7 @@
 void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices) {
     glBegin(mode);
     if (type != GL_UNSIGNED_SHORT) {
-        printf("tinygles: can't handle type 0x%04x in glDrawElements\n", type);
+        fprintf(stderr, "tinygles: can't handle type 0x%04x in glDrawElements\n", type);
     }
     const GLshort *shorts = indices;
     for (int i = 0; i < count; i++) {

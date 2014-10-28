@@ -55,7 +55,7 @@ static const GLsizei gl_sizeof(GLenum type) {
             return 1;
     }
     // formats
-    printf("gl_sizeof(): Unknown data type 0x%x\n", type);
+    fprintf(stderr, "gl_sizeof(): Unknown data type 0x%x\n", type);
     return 0;
 }
 
@@ -73,7 +73,7 @@ static const GLuint gl_max_value(GLenum type) {
         case GL_INT:            return 2147483647;
         case GL_UNSIGNED_INT:   return 4294967295;
     }
-    printf("gl_max_value(): Unknown GL type 0x%x\n", type);
+    fprintf(stderr, "gl_max_value(): Unknown GL type 0x%x\n", type);
     return 0;
 }
 
@@ -118,7 +118,7 @@ static const GLsizei gl_pixel_sizeof(GLenum format, GLenum type) {
             width = 4;
             break;
         default:
-            printf("gl_pixel_sizeof(): Unknown format %x\n", format);
+            fprintf(stderr, "gl_pixel_sizeof(): Unknown format %x\n", format);
             return 0;
     }
 
