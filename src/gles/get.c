@@ -97,3 +97,7 @@ void glGetFloatv(GLenum pname, GLfloat *v) {
             break;
     }
 }
+
+void glGetBooleanv(GLenum pname, GLboolean *v) {
+    fprintf(stderr, "warning: unknown pname in glGetBooleanv(): %x\n", pname);
+}
