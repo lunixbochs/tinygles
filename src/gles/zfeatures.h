@@ -13,10 +13,9 @@
  * 
  *           External  8    16    32
  * Internal 
- *  16                 Y     Y     Y
  *  32                 .     Y     Y
  *
- * Internal pixel format: see TGL_FEATURE_RENDER_BITS
+ * Internal pixel format: 32 bits
  * External pixel format: see TGL_FEATURE_xxx_BITS 
  */
 
@@ -25,9 +24,5 @@
 #define TGL_FEATURE_8_BITS         1
 #define TGL_FEATURE_16_BITS        1
 #define TGL_FEATURE_32_BITS        1
-
-
-#define TGL_FEATURE_RENDER_BITS    16
-// #define TGL_FEATURE_RENDER_BITS    32
 
 #endif /* _tgl_features_h_ */

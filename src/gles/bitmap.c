@@ -63,11 +63,7 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
 #else
             for (int j = 8; j--; ) {
                 GLuint value = (b & (1 << j)) ? 0xFFFFFFFF : 0;
-#if TGL_FEATURE_RENDER_BITS == 32
                 *(GLuint *)to |= value;
-#elif TGL_FEATURE_RENDER_BITS == 16
-                *(GLushort *)to |= value;
-#endif
                 to += PSZB;
             }
 #endif // __ARM_NEON__
@@ -90,13 +86,7 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
 
     // TODO: convert+blit directly into the pbuffer to save a copy?
 
-    if (! pixel_convert(data, &dst, width, height, format, type, GL_BGRA,
-#if TGL_FEATURE_RENDER_BITS == 32
-                GL_UNSIGNED_BYTE
-#elif TGL_FEATURE_RENDER_BITS == 16
-                GL_UNSIGNED_SHORT_5_6_5
-#endif
-            )) {
+    if (! pixel_convert(data, &dst, width, height, format, type, GL_BGRA, GL_UNSIGNED_BYTE)) {
         return;
     }
     pixels = (GLubyte *)dst;
