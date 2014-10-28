@@ -129,7 +129,7 @@ static void ZB_copyBuffer(ZBuffer * zb, void *buf, int linesize) {
 
 /* XXX: not optimized */
 void ZB_copyFrameBuffer5R6G5B(ZBuffer *zb, void *buf, int linesize) {
-#ifdef __ARM_NEON__
+#if 0
     asm volatile (
         "mov r0, #0\n"
         ".outer:\n"
