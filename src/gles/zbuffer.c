@@ -129,91 +129,57 @@ static void ZB_copyBuffer(ZBuffer * zb, void *buf, int linesize) {
 
 /* XXX: not optimized */
 void ZB_copyFrameBuffer5R6G5B(ZBuffer *zb, void *buf, int linesize) {
-#if 0
+#ifdef __ARM_NEON__
     asm volatile (
+        "blu .req d0\n"
+        "grn .req d1\n"
+        "red .req d2\n"
+        "alp .req d3\n"
+        "gb .req grn\n"
+        "rg .req red\n"
+
+        "pld [%1]\n"
+        // y = 0
         "mov r0, #0\n"
         ".outer:\n"
+            // n = zb->xsize >> 2;
             "mov r1, %3\n"
+            // p = p1
             "mov r2, %0\n"
-
             ".inner:\n"
-                "pld [%1]\n"
-                "vld4.8 {d0, d1, d2, d3}, [%1]\n"
-
-                "vshll.u8 q3, d1, #8\n"
-                "vshll.u8 q5, d0, #8\n"
-                "vshll.u8 q4, d2, #8\n"
-
-                "vsri.u16 q5, q3, #5\n"
-                "vsri.u16 q5, q4, #11\n"
-
-                "vst1.32 {d10, d11}, [r2]\n"
-
+                // load zb->pbuf
+                "vld4.8 {blu, grn, red, d3}, [%1]\n"
+                // z->pbuf += 32
                 "add %1, %1, #32\n"
-                "add r2, r2, #16\n"
-
+                "pld [%1, #32]\n"
+                // n -= 2
                 "sub r1, r1, #2\n"
+
+                // shuffle pixels
+                "vsri.8 red, grn, #5\n"
+                "vshl.u8 gb, grn, #3\n"
+                "vsri.8 gb, blu, #3\n"
+
+                // memcpy(p, {gb, rg}, 32)
+                "vst2.8 {gb, rg}, [r2]\n"
+
+                // p += 16
+                "add r2, r2, #16\n"
                 "cmp r1, #0\n"
                 "bgt .inner\n"
 
+            // buf += linesize
             "add %0, %0, %4\n"
+            // y += 1
             "add r0, r0, #1\n"
+            // if y < zb->ysize; goto .outer
             "cmp r0, %2\n"
             "blt .outer\n"
 
         :
         : "r"(buf), "r"(zb->pbuf), "r"(zb->ysize), "r"(zb->xsize >> 2), "r"(linesize)
-        : "r0", "r1", "r2", "q0", "q1", "q2", "q3", "q4", "q5"
+        : "r0", "r1", "r2", "d0", "d1", "d2", "d3"
     );
-    /*
-    asm volatile (
-        "mov r0, #0xf800\n"
-        "vdup.32 d6, r0\n"
-        "mov r0, #0x07e0\n"
-        "vdup.32 d7, r0\n"
-        "mov r0, #0x1f\n"
-        "vdup.32 d8, r0\n"
-
-        "mov r0, #0\n"
-        ".outer:\n"
-            "mov r1, %3\n"
-            "mov r2, %0\n"
-
-            ".inner:\n"
-                "pld [%1]\n"
-                "vld1.32 {d0, d1}, [%1]\n"
-                "vld1.32 {d2, d3}, [%1]\n"
-                "vld1.32 {d4, d5}, [%1]\n"
-
-                "vshrn.u32 d0, q0, #8\n"
-                "vshrn.u32 d1, q1, #5\n"
-                "vshrn.u32 d2, q2, #3\n"
-
-                "vand.u16 d0, d6\n"
-                "vand.u16 d1, d7\n"
-                "vand.u16 d2, d8\n"
-                "vorr d0, d0, d1\n"
-                "vorr d0, d0, d2\n"
-
-                "vst1.32 d0, [r2]\n"
-
-                "add %1, %1, #16\n"
-                "add r2, r2, #8\n"
-
-                "sub r1, r1, #1\n"
-                "cmp r1, #0\n"
-                "bgt .inner\n"
-
-            "add %0, %0, %4\n"
-            "add r0, r0, #1\n"
-            "cmp r0, %2\n"
-            "blt .outer\n"
-
-        :
-        : "r"(buf), "r"(zb->pbuf), "r"(zb->ysize), "r"(zb->xsize >> 2), "r"(linesize)
-        : "r0", "r1", "r2", "q0", "q1", "q2", "q3", "q4", "q5", "q6"
-    );
-    */
 #else
     PIXEL *q = zb->pbuf;
     unsigned short *p, *p1 = (unsigned short *) buf;
