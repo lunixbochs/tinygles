@@ -302,15 +302,15 @@ Bool glXMakeCurrent(Display *dpy, GLXDrawable drawable, GLXContext ctx1) {
             switch(bpp) {
                 case 24:
                     mode = ZB_MODE_RGB24;
-                    ctx->do_convert = 1;
+                    ctx->do_convert = (TGL_FEATURE_RENDER_BITS != 24);
                     break;
                 case 32:
                     mode = ZB_MODE_RGBA;
-                    ctx->do_convert = 0;
+                    ctx->do_convert = (TGL_FEATURE_RENDER_BITS != 32);
                     break;
                 default:
                     mode = ZB_MODE_5R6G5B;
-                    ctx->do_convert = 1;
+                    ctx->do_convert = (TGL_FEATURE_RENDER_BITS != 16);
                     break;
             }
             zb = ZB_open(xsize, ysize, mode, 0, NULL, NULL, NULL);

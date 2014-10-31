@@ -30,11 +30,28 @@
 #define ZB_MODE_RGB24   4  /* 24 bit rgb mode */
 #define ZB_NB_COLORS    225 /* number of colors for 8 bit display */
 
+#if TGL_FEATURE_RENDER_BITS == 16
+
+/* 16 bit mode */
+#define RGB_TO_PIXEL(r, g, b) \
+  (((r) & 0xF800) | (((g) >> 5) & 0x07E0) | ((b) >> 11))
+typedef unsigned short PIXEL;
+#define PSZB 2 
+#define PSZSH 4 
+
+#elif TGL_FEATURE_RENDER_BITS == 32
+
 #define RGB_TO_PIXEL(r, g, b) \
   ((((r) << 8) & 0xff0000) | ((g) & 0xff00) | ((b) >> 8))
 typedef unsigned int PIXEL;
 #define PSZB 4
 #define PSZSH 5
+
+#else
+
+#error Incorrect number of bits per pixel
+
+#endif
 
 typedef struct {
     int xsize, ysize;
