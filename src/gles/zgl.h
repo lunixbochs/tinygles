@@ -48,6 +48,12 @@
 #define TGL_OFFSET_LINE    0x2
 #define TGL_OFFSET_POINT   0x4
 
+#if TGL_FEATURE_RENDER_BITS == 32
+#define TGL_PIXEL_TYPE GL_UNSIGNED_BYTE
+#elif TGL_FEATURE_RENDER_BITS == 16
+#define TGL_PIXEL_TYPE GL_UNSIGNED_SHORT_5_6_5
+#endif
+
 typedef struct GLSpecBuf {
     int shininess_i;
     int last_used;
