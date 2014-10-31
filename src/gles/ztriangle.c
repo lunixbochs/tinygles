@@ -10,7 +10,7 @@ int color;
 
 #define DRAW_INIT() \
     { \
-        color = RGB_TO_PIXEL(p2->r,p2->g,p2->b); \
+        color = RGB_TO_PIXEL(p2->r, p2->g, p2->b); \
     }
 
 #define PUT_PIXEL(_a) \
@@ -217,11 +217,11 @@ void ZB_fillTriangleSmooth(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBuf
 #include "ztriangle.h"
 }
 
-void ZB_setTexture(ZBuffer *zb,PIXEL *texture) {
+void ZB_setTexture(ZBuffer *zb, PIXEL *texture) {
     zb->current_texture=texture;
 }
 
-void ZB_fillTriangleMapping(ZBuffer *zb, ZBufferPoint *p0,ZBufferPoint *p1,ZBufferPoint *p2) {
+void ZB_fillTriangleMapping(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBufferPoint *p2) {
     PIXEL *texture;
 
 #define INTERP_Z

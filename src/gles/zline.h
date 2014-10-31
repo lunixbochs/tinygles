@@ -37,7 +37,7 @@
 
 #ifdef INTERP_RGB
 #define RGB(x) x
-#define RGBPIXEL *pp = RGB_TO_PIXEL(r >> 8,g >> 8,b >> 8)
+#define RGBPIXEL *pp = RGB_TO_PIXEL(r >> 8, g >> 8, b >> 8)
 #else /* INTERP_RGB */
 #define RGB(x)
 #define RGBPIXEL *pp = color
@@ -58,7 +58,7 @@
 #define PUTPIXEL() RGBPIXEL
 #endif /* INTERP_Z */
 
-#define DRAWLINE(dx,dy,inc_1,inc_2) \
+#define DRAWLINE(dx, dy, inc_1, inc_2) \
     n=dx;\
     ZZ(zinc=(p2->z-p1->z)/n);\
     RGB(rinc=((p2->r-p1->r) << 8)/n;\
