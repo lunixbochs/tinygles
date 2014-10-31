@@ -146,18 +146,17 @@ void ZB_copyFrameBuffer5R6G5B(ZBuffer *zb, void *buf, int linesize) {
             "mov r1, %3\n"
             // p = p1
             "mov r2, %0\n"
+            // this could be faster if X were divisible by 8, but unfortunately that's not always the case :(
             ".inner:\n"
-                // load zb->pbuf
-                "vld4.8 {blu, grn, red, d3}, [%1]\n"
-                // z->pbuf += 32
-                "add %1, %1, #32\n"
+                // load zb->pbuf; zb->pbuf += 32
+                "vld4.8 {blu, grn, red, alp}, [%1]!\n"
                 "pld [%1, #32]\n"
                 // n -= 2
                 "sub r1, r1, #2\n"
 
                 // shuffle pixels
-                "vsri.8 red, grn, #5\n"
                 "vshl.u8 gb, grn, #3\n"
+                "vsri.8 red, grn, #5\n"
                 "vsri.8 gb, blu, #3\n"
 
                 // memcpy(p, {gb, rg}, 32)
