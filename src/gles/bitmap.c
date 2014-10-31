@@ -32,7 +32,7 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
     uintptr_t to;
     int x, y;
 
-#ifdef __ARM_NEON__
+#if 0 // __ARM_NEON__
     uint32_t mask1s[] = {128, 64, 32, 16};
     uint32_t mask2s[] = {8, 4, 2, 1};
     uint32x4_t mask1 = vld1q_u32(mask1s);

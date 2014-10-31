@@ -13,10 +13,6 @@
 #include "zmath.h"
 #include "zfeatures.h"
 
-#ifdef __ARM_NEON__
-#include "arm_neon.h"
-#endif
-
 #ifndef MIN
 #define MIN(a, b) (((a) < (b) ? (a) : (b)))
 #endif
