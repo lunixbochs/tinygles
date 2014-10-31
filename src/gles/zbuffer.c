@@ -470,7 +470,7 @@ void ZB_clear(ZBuffer * zb, int clear_z, int z, int clear_color, int r, int g, i
     if (clear_color) {
         pp = zb->pbuf;
         for (y = 0; y < zb->ysize; y++) {
-#if TGL_FEATURE_RENDER_BITS == 15 || TGL_FEATURE_RENDER_BITS == 16
+#if TGL_FEATURE_RENDER_BITS == 16
             color = RGB_TO_PIXEL(r, g, b);
             memset_short(pp, color, zb->xsize);
 #elif TGL_FEATURE_RENDER_BITS == 32

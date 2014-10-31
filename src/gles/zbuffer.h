@@ -36,8 +36,8 @@
 #define RGB_TO_PIXEL(r, g, b) \
   (((r) & 0xF800) | (((g) >> 5) & 0x07E0) | ((b) >> 11))
 typedef unsigned short PIXEL;
-#define PSZB 2 
-#define PSZSH 4 
+#define PSZB 2
+#define PSZSH 4
 
 #elif TGL_FEATURE_RENDER_BITS == 32
 

@@ -32,10 +32,6 @@ int color;
  */
 
 void ZB_fillTriangleSmooth(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBufferPoint *p2) {
-#if TGL_FEATURE_RENDER_BITS == 16
-    int _drgbdx;
-#endif
-
 #define INTERP_Z
 #define INTERP_RGB
 
