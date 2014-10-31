@@ -63,13 +63,7 @@ void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
 #else
             for (int j = 8; j--; ) {
                 GLuint value = (b & (1 << j)) ? 0xFFFFFFFF : 0;
-#if TGL_FEATURE_RENDER_BITS == 32
-                *(GLuint *)to |= value;
-#elif TGL_FEATURE_RENDER_BITS == 16
-                *(GLushort *)to |= value;
-#else
-#error "Unsupported render bits."
-#endif
+                *(TGL_PIXEL_TYPE *)to |= value;
                 to += PSZB;
             }
 #endif // __ARM_NEON__
@@ -92,7 +86,7 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
 
     // TODO: convert+blit directly into the pbuffer to save a copy?
 
-    if (! pixel_convert(data, &dst, width, height, format, type, GL_BGRA, TGL_PIXEL_TYPE)) {
+    if (! pixel_convert(data, &dst, width, height, format, type, GL_BGRA, TGL_PIXEL_ENUM)) {
         return;
     }
     pixels = (GLubyte *)dst;
