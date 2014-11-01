@@ -93,6 +93,6 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
     for (int y = ystart; y < height; y++) {
         to = (GLubyte *)pbuf_pos(zb, pos->x, pos->y - y);
         from = data + src_stride * (xstart + y * width);
-        pixel_convert_direct(from, to, screen_width, format, type, src_stride, GL_BGRA, TGL_PIXEL_ENUM, PSZB);
+        pixel_convert_direct(from, to, screen_width, format, type, src_stride, GL_RGBA, TGL_PIXEL_ENUM, PSZB);
     }
 }
