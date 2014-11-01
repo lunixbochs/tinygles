@@ -1,5 +1,6 @@
 #include "zgl.h"
 #include "pixel.h"
+#include "gl_helpers.h"
 
 void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z) {
     GLContext *c = gl_get_context();
@@ -80,29 +81,18 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
     GLRasterPos *pos = &c->raster_pos;
     ZBuffer *zb = c->zb;
     GLViewport *viewport = &c->viewport;
-
-    GLvoid *pixels, *from, *to;
-    GLvoid *dst = NULL;
-
-    // TODO: convert+blit directly into the pbuffer to save a copy?
-
-    if (! pixel_convert(data, &dst, width, height, format, type, GL_BGRA, TGL_PIXEL_ENUM)) {
-        return;
-    }
-    pixels = (GLubyte *)dst;
-
+    const GLvoid *from;
+    GLvoid *to;
     // shrink our pixel ranges to stay inside the viewport
     int ystart = MAX(0, -pos->y);
     height = MIN(pos->y, height);
-
     int xstart = MAX(0, -pos->x);
     int screen_width = MIN(viewport->xsize - pos->x, width);
 
+    GLsizei src_stride = gl_pixel_sizeof(format, type);
     for (int y = ystart; y < height; y++) {
         to = (GLubyte *)pbuf_pos(zb, pos->x, pos->y - y);
-        from = pixels + PSZB * (xstart + y * width);
-        memcpy(to, from, PSZB * screen_width);
+        from = data + src_stride * (xstart + y * width);
+        pixel_convert_direct(from, to, screen_width, format, type, src_stride, GL_BGRA, TGL_PIXEL_ENUM, PSZB);
     }
-    if (pixels != data)
-        free(pixels);
 }
