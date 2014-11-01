@@ -140,6 +140,34 @@ bool remap_pixel(const GLvoid *src, GLvoid *dst,
 bool pixel_convert_direct(const GLvoid *src, GLvoid *dst, GLuint width,
                           GLenum src_format, GLenum src_type, GLsizei src_stride,
                           GLenum dst_format, GLenum dst_type, GLsizei dst_stride) {
+#ifdef __ARM_NEON__
+    if (src_format == GL_RGBA && (dst_format == GL_RGBA || dst_format == GL_RGB) &&
+            src_type == GL_UNSIGNED_BYTE && dst_type == GL_UNSIGNED_SHORT_5_6_5) {
+        asm volatile (
+            ".loop:\n"
+                "vld4.8 {d0-d3}, [%[src]]\n"
+                "add %[src], %[src], %[src_stride]\n"
+                "pld [%[src], #32]\n"
+                "sub %[n], %[n], #8\n"
+
+                "vsri.8 d0, d1, #5\n"
+                "vshl.u8 d1, d1, #3\n"
+                "vsri.8 d1, d2, #3\n"
+                "vswp d0, d1\n"
+
+                "vst2.8 {d0, d1}, [%[dst]]\n"
+                "add %[dst], %[dst], %[dst_stride]\n"
+
+                "cmp %[n], #0\n"
+                "bgt .loop\n"
+            :
+            : [src]"r"(src), [dst]"r"(dst), [n]"r"(width),
+              [src_stride]"r"(src_stride * 8), [dst_stride]"r"(dst_stride * 8)
+            : "d0", "d1", "d2", "d3"
+        );
+        return true;
+    }
+#endif
     const colorlayout_t *src_color, *dst_color;
     src_color = get_color_map(src_format);
     dst_color = get_color_map(dst_format);
