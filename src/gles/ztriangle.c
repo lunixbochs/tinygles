@@ -6,8 +6,6 @@
 void ZB_fillTriangleFlat(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBufferPoint *p2) {
 int color;
 
-#define INTERP_Z
-
 #define DRAW_INIT() \
     { \
         color = RGB_TO_PIXEL(p2->r, p2->g, p2->b); \
@@ -15,12 +13,7 @@ int color;
 
 #define PUT_PIXEL(_a) \
     { \
-        zz = z >> ZB_POINT_Z_FRAC_BITS; \
-        if (ZCMP(zz, pz[_a])) { \
-            pp[_a] = color; \
-            pz[_a] = zz; \
-        } \
-        z += dzdx; \
+        pp[_a] = color; \
     }
 
 #include "ztriangle.h"
@@ -32,7 +25,6 @@ int color;
  */
 
 void ZB_fillTriangleSmooth(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBufferPoint *p2) {
-#define INTERP_Z
 #define INTERP_RGB
 
 #define SAR_RND_TO_ZERO(v, n) (v / (1 << n))
@@ -43,12 +35,7 @@ void ZB_fillTriangleSmooth(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBuf
 
 #define PUT_PIXEL(_a) \
     { \
-        zz = z >> ZB_POINT_Z_FRAC_BITS; \
-        if (ZCMP(zz, pz[_a])) { \
-            pp[_a] = RGB_TO_PIXEL(or1, og1, ob1); \
-            pz[_a] = zz; \
-        } \
-        z += dzdx; \
+        pp[_a] = RGB_TO_PIXEL(or1, og1, ob1); \
         og1 += dgdx; \
         or1 += drdx; \
         ob1 += dbdx; \
@@ -224,7 +211,6 @@ void ZB_setTexture(ZBuffer *zb, PIXEL *texture) {
 void ZB_fillTriangleMapping(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBufferPoint *p2) {
     PIXEL *texture;
 
-#define INTERP_Z
 #define INTERP_ST
 
 #define DRAW_INIT() \
@@ -234,12 +220,7 @@ void ZB_fillTriangleMapping(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBu
 
 #define PUT_PIXEL(_a) \
     { \
-        zz = z >> ZB_POINT_Z_FRAC_BITS; \
-        if (ZCMP(zz, pz[_a])) { \
-            pp[_a] = texture[((t & 0x3FC00000) | s) >> 14]; \
-            pz[_a] = zz; \
-        } \
-        z += dzdx; \
+        pp[_a] = texture[((t & 0x3FC00000) | s) >> 14]; \
         s += dsdx; \
         t += dtdx; \
     }
@@ -274,13 +255,8 @@ void ZB_fillTriangleMappingPerspective(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoi
 
 #define PUT_PIXEL(_a) \
     { \
-        zz = z >> ZB_POINT_Z_FRAC_BITS; \
-        if (ZCMP(zz, pz[_a])) { \
-            pp[_a] = *(PIXEL *)((char *)texture + \
-                    (((t & 0x3FC00000) | (s & 0x003FC000)) >> (17 - PSZSH)));\
-            pz[_a] = zz; \
-        } \
-        z += dzdx; \
+        pp[_a] = *(PIXEL *)((char *)texture + \
+                (((t & 0x3FC00000) | (s & 0x003FC000)) >> (17 - PSZSH)));\
         s += dsdx; \
         t += dtdx; \
     }
