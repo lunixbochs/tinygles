@@ -86,12 +86,16 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
     // shrink our pixel ranges to stay inside the viewport
     int ystart = MAX(0, -pos->y);
     height = MIN(pos->y, height);
+    if (pos->y >= viewport->ysize) {
+        ystart += (pos->y - viewport->ysize - 1);
+    }
     int xstart = MAX(0, -pos->x);
-    int screen_width = MIN(viewport->xsize - pos->x, width);
+    int screen_width = MIN(viewport->xsize - pos->x, width - 1);
+    if (screen_width < 0) return;
 
     GLsizei src_stride = gl_pixel_sizeof(format, type);
     for (int y = ystart; y < height; y++) {
-        to = (GLubyte *)pbuf_pos(zb, pos->x, pos->y - y);
+        to = (GLubyte *)pbuf_pos(zb, pos->x, pos->y - y - 1);
         from = data + src_stride * (xstart + y * width);
         pixel_convert_direct(from, to, screen_width, format, type, src_stride, GL_RGBA, TGL_PIXEL_ENUM, PSZB);
     }
