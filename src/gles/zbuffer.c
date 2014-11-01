@@ -316,8 +316,8 @@ void ZB_copyFrameBuffer5R6G5B(ZBuffer *zb, void *buf, int linesize) {
                 "sub r1, r1, #2\n"
 
                 // shuffle pixels
-                "vshl.u8 gb, grn, #3\n"
                 "vsri.8 red, grn, #5\n"
+                "vshl.u8 gb, grn, #3\n"
                 "vsri.8 gb, blu, #3\n"
 
                 // memcpy(p, {gb, rg}, 32)
