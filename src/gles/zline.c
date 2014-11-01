@@ -4,26 +4,16 @@
 #define ZCMP(z, zpix) ((z) >= (zpix))
 
 void ZB_plot(ZBuffer *zb, ZBufferPoint *p) {
-    unsigned short *pz;
     PIXEL *pp;
-    int zz;
-
-    pz = zb->zbuf + (p->y * zb->xsize + p->x);
     pp = (PIXEL *) ((char *) zb->pbuf + zb->linesize * p->y + p->x * PSZB);
-    zz = p->z >> ZB_POINT_Z_FRAC_BITS;
-    if (ZCMP(zz, *pz)) {
-        *pp = RGB_TO_PIXEL(p->r, p->g, p->b);
-        *pz = zz;
-    }
+    *pp = RGB_TO_PIXEL(p->r, p->g, p->b);
 }
 
-#define INTERP_Z
 static void ZB_line_flat_z(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2, int color) {
 #include "zline.h"
 }
 
 /* line with color interpolation */
-#define INTERP_Z
 #define INTERP_RGB
 static void ZB_line_interp_z(ZBuffer * zb, ZBufferPoint * p1, ZBufferPoint * p2) {
 #include "zline.h"
