@@ -142,7 +142,7 @@ bool pixel_convert_direct(const GLvoid *src, GLvoid *dst, GLuint width,
                           GLenum dst_format, GLenum dst_type, GLsizei dst_stride) {
 #ifdef __ARM_NEON__
     if (src_format == GL_RGBA && (dst_format == GL_RGBA || dst_format == GL_RGB) &&
-            src_type == GL_UNSIGNED_BYTE && dst_type == GL_UNSIGNED_SHORT_5_6_5) {
+            src_type == GL_UNSIGNED_BYTE && dst_type == GL_UNSIGNED_SHORT_5_6_5 && width >= 8) {
         asm volatile (
             ".loop:\n"
                 "vld4.8 {d0-d3}, [%[src]]\n"
@@ -158,14 +158,15 @@ bool pixel_convert_direct(const GLvoid *src, GLvoid *dst, GLuint width,
                 "vst2.8 {d0, d1}, [%[dst]]\n"
                 "add %[dst], %[dst], %[dst_stride]\n"
 
-                "cmp %[n], #0\n"
-                "bgt .loop\n"
-            :
-            : [src]"r"(src), [dst]"r"(dst), [n]"r"(width),
-              [src_stride]"r"(src_stride * 8), [dst_stride]"r"(dst_stride * 8)
+                "cmp %[n], #8\n"
+                "bge .loop\n"
+            : [src]"+r"(src), [dst]"+r"(dst), [n]"+r"(width)
+            : [src_stride]"r"(src_stride * 8), [dst_stride]"r"(dst_stride * 8)
             : "d0", "d1", "d2", "d3"
         );
-        return true;
+        if (width == 0) {
+            return true;
+        }
     }
 #endif
     const colorlayout_t *src_color, *dst_color;
