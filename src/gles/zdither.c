@@ -8,8 +8,6 @@
 #include "zbuffer.h"
 #include <assert.h>
 
-#if defined(TGL_FEATURE_8_BITS)
-
 #define _R	5
 #define _G	9
 #define _B	5
@@ -148,5 +146,3 @@ void ZB_ditherFrameBuffer(ZBuffer *zb,  unsigned char *buf, int linesize) {
         }
     }
 }
-
-#endif

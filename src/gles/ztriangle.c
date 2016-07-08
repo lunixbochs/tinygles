@@ -54,8 +54,6 @@ void ZB_fillTriangleSmooth(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBuf
         ob1 += dbdx; \
     }
 
-#if TGL_FEATURE_RENDER_BITS == 32
-
 #ifdef __ARM_NEON__
 #define DRAW_LINE() \
 { \
@@ -212,7 +210,6 @@ void ZB_fillTriangleSmooth(ZBuffer *zb, ZBufferPoint *p0, ZBufferPoint *p1, ZBuf
     } \
 }
 #endif
-#endif /* TGL_FEATURE_RENDER_BITS */
 
 #include "ztriangle.h"
 }
